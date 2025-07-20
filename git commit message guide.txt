@@ -1,0 +1,9 @@
+| Type       | Description                                     |
+| ---------- | ----------------------------------------------- |
+| `feat`     | New feature                                     |
+| `fix`      | Bug fix                                         |
+| `chore`    | Maintenance (e.g., updating deps)               |
+| `docs`     | Documentation-only changes                      |
+| `style`    | Code formatting, no logic changes               |
+| `refactor` | Code change that neither fixes nor adds feature |
+| `test`     | Adding or updating tests                        |
