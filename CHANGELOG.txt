@@ -1,0 +1,12 @@
+# 📋 Changelog
+
+All notable changes to this project will be documented here.
+
+---
+
+## [0.1.0] - 2025-07-20
+### Added
+- Enter Email Front End
+- Photo options: 4-shot and 6-shot modes
+
+---
