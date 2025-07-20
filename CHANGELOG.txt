@@ -8,5 +8,5 @@ All notable changes to this project will be documented here.
 ### Added
 - Enter Email Front End
 - Photo options: 4-shot and 6-shot modes
-
+- CHANGELOG, SEMANTIC VERSIONING, COMMIT MESSAGE
 ---
