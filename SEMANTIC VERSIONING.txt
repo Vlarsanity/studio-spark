@@ -1,0 +1,8 @@
+vMAJOR.MINOR.PATCH
+
+
+| Part      | Increment When...                                                      | Example         |
+| --------- | ---------------------------------------------------------------------- | --------------- |
+| **MAJOR** | You make **breaking changes** (things that might break existing usage) | v1.0.0 → v2.0.0 |
+| **MINOR** | You **add features** that are backward-compatible                      | v1.2.0 → v1.3.0 |
+| **PATCH** | You make **bug fixes or tweaks** that don't break or add features      | v1.3.0 → v1.3.1 |
