@@ -10,3 +10,9 @@ All notable changes to this project will be documented here.
 - Photo options: 4-shot and 6-shot modes
 - CHANGELOG, SEMANTIC VERSIONING, COMMIT MESSAGE
 ---
+
+## [0.1.1] - 2025-07-21
+### PATCH
+- Adjusted 4 shots and 6 shots 
+- added sample template image
+---
