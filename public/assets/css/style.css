@@ -5,3 +5,28 @@ body {
 h1 {
   font-weight: 700;
 }
+
+.template-option {
+  display: block;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.template-option input[type="radio"] {
+  display: none;
+}
+
+.template-option input[type="radio"]:checked + img {
+  outline: 4px solid #0d6efd;
+  outline-offset: 4px;
+  border-radius: 10px;
+}
+
+.template-option input[type="radio"]:checked ~ .btn {
+  font-weight: bold;
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}

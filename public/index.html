@@ -45,28 +45,35 @@
 
             <!-- 4 Shots Template -->
             <div class="col-md-6 mb-4 mb-md-0">
-              <img src="assets/template-4shots.png" alt="4 Shots Layout" class="img-fluid mb-3 rounded shadow">
-              <button class="btn btn-outline-primary btn-lg w-100" onclick="selectTemplate(4)">
-                4 Shots Template
-              </button>
+              <label class="template-option">
+                <input type="radio" name="template" value="4" onclick="selectTemplate(4)">
+                <img src="assets/img/4 Shots Template.PNG" alt="4 Shots Layout" class="img-fluid mb-3 rounded shadow">
+                <div class="btn btn-outline-primary btn-lg w-100">
+                  4 Shots Template
+                </div>
+              </label>
             </div>
-
+          
             <!-- 6 Shots Template -->
             <div class="col-md-6">
-              <img src="assets/template-6shots.png" alt="6 Shots Layout" class="img-fluid mb-3 rounded shadow">
-              <button class="btn btn-outline-success btn-lg w-100" onclick="selectTemplate(6)">
-                6 Shots Template
-              </button>
+              <label class="template-option">
+                <input type="radio" name="template" value="6" onclick="selectTemplate(6)">
+                <img src="assets/img/6 Shots Template.PNG" alt="6 Shots Layout" class="img-fluid mb-3 rounded shadow">
+                <div class="btn btn-outline-success btn-lg w-100">
+                  6 Shots Template
+                </div>
+              </label>
             </div>
-
+          
             <!-- Start Session Button -->
             <div class="col-12 mt-4">
               <button id="startSessionBtn" class="btn btn-primary btn-lg w-100" onclick="startSession()" disabled>
                 Start Session
               </button>
             </div>
-
+          
           </div>
+          
 
         </div>
       </div>
