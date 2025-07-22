@@ -5,7 +5,7 @@ All notable changes to this project will be documented here.
 ---
 
 ## [0.1.0] - 2025-07-20
-### Added
+### MINOR
 - Enter Email Front End
 - Photo options: 4-shot and 6-shot modes
 - CHANGELOG, SEMANTIC VERSIONING, COMMIT MESSAGE
@@ -15,4 +15,12 @@ All notable changes to this project will be documented here.
 ### PATCH
 - Adjusted 4 shots and 6 shots 
 - added sample template image
+---
+
+## [0.2.2] - 2025-07-22
+### MINOR
+- added camera.html and camera.js for accessing the camera
+---
+### PATCH
+- fix sample template image
 ---
