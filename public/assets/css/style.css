@@ -1,6 +1,10 @@
-/* Template Label - Hide radio inputs */
+/* Hide radio inputs but keep them accessible */
 .template-option input[type="radio"] {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 /* Template Images */
@@ -17,15 +21,43 @@
 }
 
 .template-img {
-  height: 100%;
-  width: auto;
-  object-fit: cover;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
   display: block;
+  user-select: none;
+  pointer-events: none;
+  
 }
 
-/* Align template buttons */
-.template-row .btn {
-  margin-top: -10px;
+/* Template option label styling */
+.template-option {
+  cursor: pointer;
+  display: block;
+  user-select: none;
+}
+
+/* Style the button div inside label to look like a button */
+.template-option .btn {
+  margin-top: 0.5rem;
+  pointer-events: none; /* Prevent button from intercepting clicks, label handles it */
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Show focus outline when radio input is focused */
+.template-option input[type="radio"]:focus + img,
+.template-option input[type="radio"]:focus + img + .btn {
+  outline: 3px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Show selected state */
+.template-option input[type="radio"]:checked + img + .btn {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
 }
 
 /* Ensure spacing consistency on smaller screens */
