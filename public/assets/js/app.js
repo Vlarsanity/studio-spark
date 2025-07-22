@@ -1,27 +1,39 @@
-// Replace with your Supabase project credentials
-const supabaseUrl = 'https://your-project.supabase.co';
-const supabaseKey = 'public-anon-key';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// Enable Supabase if needed later
+// const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-document.getElementById("start-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+// Wait for DOM to load
+document.addEventListener("DOMContentLoaded", () => {
+  const emailInput = document.getElementById("email");
+  const layoutInputs = document.querySelectorAll('input[name="layout-choice"]');
+  const startBtn = document.getElementById("startSessionBtn");
 
-  const email = document.getElementById("email").value.trim();
-  const layout = document.getElementById("layout-choice").value;
-
-  if (!email || !layout) {
-    document.getElementById("error-message").textContent = "Please complete all fields.";
-    return;
+  function validateForm() {
+    const email = emailInput.value.trim();
+    const layoutSelected = document.querySelector('input[name="layout-choice"]:checked');
+    startBtn.disabled = !(email && layoutSelected);
   }
 
-  const { error } = await supabase.auth.signInWithOtp({ email });
+  emailInput.addEventListener("input", validateForm);
+  layoutInputs.forEach(input => input.addEventListener("change", validateForm));
 
-  if (error) {
-    document.getElementById("error-message").textContent = error.message;
-  } else {
-    // Store selected layout in localStorage and redirect
+  document.getElementById("start-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const email = emailInput.value.trim();
+    const selectedLayout = document.querySelector('input[name="layout-choice"]:checked');
+
+    if (!email || !selectedLayout) {
+      document.getElementById("error-message").textContent = "Please complete all fields.";
+      return;
+    }
+
+    const layout = selectedLayout.value;
+
+    // Save to localStorage
     localStorage.setItem("selectedLayout", layout);
     localStorage.setItem("userEmail", email);
-    window.location.href = "camera.html"; // Next step
-  }
+
+    // Redirect to camera.html
+    window.location.href = "camera.html";
+  });
 });
