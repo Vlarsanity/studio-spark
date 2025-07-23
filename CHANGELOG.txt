@@ -24,3 +24,14 @@ All notable changes to this project will be documented here.
 ### PATCH
 - fix sample template image
 ---
+
+## [0.3.3] - 2025-07-23
+### MINOR
+- editor page and gallery page added
+---
+
+### PATCH
+- camera access adjusted
+- editor page
+- added css style for camera.html
+---
