@@ -66,3 +66,28 @@
     max-height: 300px;
   }
 }
+
+.session-card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+.session-card:hover {
+  transform: translateY(-2px);
+}
+.photo-thumbnail {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.photo-thumbnail:hover {
+  transform: scale(1.1);
+}
+.modal-img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
