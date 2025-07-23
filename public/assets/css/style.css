@@ -91,3 +91,89 @@
   max-height: 80vh;
   object-fit: contain;
 }
+
+.photo-strip-canvas {
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+.photo-thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.photo-thumbnail:hover {
+  border-color: #0d6efd;
+  transform: scale(1.05);
+}
+
+.photo-thumbnail.selected {
+  border-color: #0d6efd;
+  border-width: 3px;
+}
+
+.editor-controls {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-btn {
+  min-width: 80px;
+  margin: 0.25rem;
+}
+
+.filter-btn.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+.text-overlay-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 0.5rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.color-picker {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 0.25rem;
+}
+
+#loading-spinner {
+  display: none;
+}
+
+.session-info {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .photo-strip-canvas {
+    width: 100%;
+  }
+  
+  .editor-controls {
+    padding: 1rem;
+  }
+}
