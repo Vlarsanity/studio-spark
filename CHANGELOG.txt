@@ -35,3 +35,8 @@ All notable changes to this project will be documented here.
 - editor page
 - added css style for camera.html
 ---
+
+## [0.3.4] - 2025-07-24
+### PATCH
+- editor page fixed issues
+---
