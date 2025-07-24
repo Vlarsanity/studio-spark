@@ -4,7 +4,7 @@ class PhotoStripEditor {
     this.canvas = null;
     this.context = null;
     this.selectedPhotos = [];
-    this.currentFilters = {};
+    this.currentFilter = 'none';
     this.textOverlays = [];
     this.isInitialized = false;
     
@@ -55,10 +55,14 @@ class PhotoStripEditor {
     // Session info
     const sessionInfo = document.getElementById('session-info');
     if (sessionInfo) {
-      sessionInfo.innerHTML = `
-        <h5>📧 ${this.sessionData.email}</h5>
-        <p class="mb-0">Layout: ${this.sessionData.layout} shots | Photos taken: ${this.sessionData.totalShots}</p>
-      `;
+      const sessionDetails = sessionInfo.querySelector('#session-details');
+      if (sessionDetails) {
+        sessionDetails.innerHTML = `
+          📧 ${this.sessionData.email} | 
+          Layout: ${this.sessionData.layout} shots | 
+          Photos taken: ${this.sessionData.totalShots}
+        `;
+      }
     }
 
     // Get UI elements
@@ -68,6 +72,7 @@ class PhotoStripEditor {
     this.downloadBtn = document.getElementById('downloadBtn');
     this.saveBtn = document.getElementById('saveBtn');
     this.resetBtn = document.getElementById('resetBtn');
+    this.homeBtn = document.getElementById('homeBtn');
     
     // Filter buttons
     this.filterButtons = {
@@ -83,6 +88,7 @@ class PhotoStripEditor {
     this.textInput = document.getElementById('text-input');
     this.textColorPicker = document.getElementById('text-color');
     this.textSizeSlider = document.getElementById('text-size');
+    this.textSizeValue = document.getElementById('text-size-value');
     this.addTextBtn = document.getElementById('add-text-btn');
     this.clearTextBtn = document.getElementById('clear-text-btn');
   }
@@ -104,6 +110,13 @@ class PhotoStripEditor {
       this.clearTextBtn.addEventListener('click', () => this.clearTextOverlays());
     }
 
+    // Text size slider
+    if (this.textSizeSlider && this.textSizeValue) {
+      this.textSizeSlider.addEventListener('input', (e) => {
+        this.textSizeValue.textContent = e.target.value + 'px';
+      });
+    }
+
     // Action buttons
     if (this.downloadBtn) {
       this.downloadBtn.addEventListener('click', () => this.downloadPhotoStrip());
@@ -118,9 +131,8 @@ class PhotoStripEditor {
     }
 
     // Home button
-    const homeBtn = document.getElementById('homeBtn');
-    if (homeBtn) {
-      homeBtn.addEventListener('click', () => {
+    if (this.homeBtn) {
+      this.homeBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to go home? Unsaved changes will be lost.')) {
           window.location.href = 'index.html';
         }
@@ -156,13 +168,19 @@ class PhotoStripEditor {
 
     this.sessionData.photos.forEach((photo, index) => {
       const photoDiv = document.createElement('div');
-      photoDiv.className = 'col-auto mb-3';
+      photoDiv.className = 'col-auto mb-2';
 
       const img = document.createElement('img');
       img.src = photo.dataUrl;
       img.alt = `Photo ${photo.shotNumber}`;
       img.className = 'photo-thumbnail selected'; // All selected by default
       img.dataset.index = index;
+      img.style.width = '80px';
+      img.style.height = '80px';
+      img.style.objectFit = 'cover';
+      img.style.cursor = 'pointer';
+      img.style.border = '3px solid #0d6efd';
+      img.style.borderRadius = '8px';
 
       img.addEventListener('click', () => this.togglePhotoSelection(index, img));
 
@@ -179,10 +197,12 @@ class PhotoStripEditor {
       // Remove from selection
       this.selectedPhotos.splice(selectedIndex, 1);
       imgElement.classList.remove('selected');
+      imgElement.style.border = '2px solid #e9ecef';
     } else {
       // Add to selection
       this.selectedPhotos.push(photo);
       imgElement.classList.add('selected');
+      imgElement.style.border = '3px solid #0d6efd';
     }
 
     // Regenerate strip
@@ -204,6 +224,8 @@ class PhotoStripEditor {
     
     // Regenerate strip with filter
     this.generatePhotoStrip();
+    
+    this.showStatus(`Filter "${filterType}" applied!`);
   }
 
   addTextOverlay() {
@@ -215,10 +237,10 @@ class PhotoStripEditor {
 
     const overlay = {
       text: text,
-      color: this.textColorPicker?.value || '#000000',
+      color: this.textColorPicker?.value || '#ffffff',
       size: parseInt(this.textSizeSlider?.value) || 24,
       x: this.stripWidth / 2, // Center horizontally
-      y: 100, // Near top
+      y: 100 + (this.textOverlays.length * 50), // Stack vertically
       id: Date.now()
     };
 
@@ -402,10 +424,19 @@ class PhotoStripEditor {
 
   drawTextOverlays() {
     this.textOverlays.forEach(overlay => {
+      // Add text shadow for better visibility
+      this.context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      this.context.shadowOffsetX = 2;
+      this.context.shadowOffsetY = 2;
+      this.context.shadowBlur = 3;
+      
       this.context.fillStyle = overlay.color;
-      this.context.font = `${overlay.size}px Arial`;
+      this.context.font = `bold ${overlay.size}px Arial`;
       this.context.textAlign = 'center';
       this.context.fillText(overlay.text, overlay.x, overlay.y);
+      
+      // Reset shadow
+      this.context.shadowColor = 'transparent';
     });
   }
 
@@ -458,7 +489,8 @@ class PhotoStripEditor {
         photoStrip: this.canvas.toDataURL('image/png'),
         savedAt: new Date().toISOString(),
         filters: this.currentFilter,
-        textOverlays: this.textOverlays.length
+        textOverlays: this.textOverlays.length,
+        sessionDate: this.sessionData.timestamp || new Date().toISOString()
       };
 
       // Get existing sessions
@@ -502,6 +534,11 @@ class PhotoStripEditor {
         this.textInput.value = '';
       }
       
+      // Reset text size display
+      if (this.textSizeValue) {
+        this.textSizeValue.textContent = '24px';
+      }
+      
       // Regenerate strip
       this.generatePhotoStrip();
       
@@ -531,12 +568,12 @@ class PhotoStripEditor {
     
     document.body.appendChild(statusDiv);
     
-    // Auto remove after 5 seconds
+    // Auto remove after 4 seconds
     setTimeout(() => {
       if (document.body.contains(statusDiv)) {
         statusDiv.remove();
       }
-    }, 5000);
+    }, 4000);
   }
 
   showError(message) {
@@ -555,12 +592,12 @@ class PhotoStripEditor {
     
     document.body.appendChild(errorDiv);
     
-    // Auto remove after 8 seconds
+    // Auto remove after 6 seconds
     setTimeout(() => {
       if (document.body.contains(errorDiv)) {
         errorDiv.remove();
       }
-    }, 8000);
+    }, 6000);
   }
 
   // Get current editor state (useful for debugging)

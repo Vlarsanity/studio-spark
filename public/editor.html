@@ -38,7 +38,7 @@
         <!-- Photo Selection -->
         <div class="editor-controls">
           <h5 class="mb-3">📸 Your Photos</h5>
-          <div id="photo-thumbnails" class="d-flex flex-wrap justify-content-center">
+          <div id="photo-thumbnails" class="row g-2">
             <!-- Thumbnails will be loaded here -->
           </div>
           <small class="text-muted d-block text-center mt-2">Click photos to select/deselect</small>
@@ -48,43 +48,31 @@
         <div class="editor-controls">
           <h5 class="mb-3">🎨 Filters</h5>
           <div class="text-center">
-            <button class="btn btn-outline-secondary filter-btn active" data-filter="none">Original</button>
-            <button class="btn btn-outline-secondary filter-btn" data-filter="grayscale">B&W</button>
-            <button class="btn btn-outline-secondary filter-btn" data-filter="sepia">Sepia</button>
-            <button class="btn btn-outline-secondary filter-btn" data-filter="vintage">Vintage</button>
-            <button class="btn btn-outline-secondary filter-btn" data-filter="bright">Bright</button>
-            <button class="btn btn-outline-secondary filter-btn" data-filter="contrast">Contrast</button>
+            <button id="filter-none" class="btn btn-outline-secondary filter-btn active">Original</button>
+            <button id="filter-grayscale" class="btn btn-outline-secondary filter-btn">B&W</button>
+            <button id="filter-sepia" class="btn btn-outline-secondary filter-btn">Sepia</button>
+            <button id="filter-vintage" class="btn btn-outline-secondary filter-btn">Vintage</button>
+            <button id="filter-bright" class="btn btn-outline-secondary filter-btn">Bright</button>
+            <button id="filter-contrast" class="btn btn-outline-secondary filter-btn">Contrast</button>
           </div>
         </div>
 
         <!-- Text Overlay -->
         <div class="editor-controls">
           <h5 class="mb-3">✏️ Add Text</h5>
-          <input type="text" id="text-overlay" class="text-overlay-input" placeholder="Enter your text here..." maxlength="50">
-          <div class="d-flex align-items-center justify-content-between">
+          <input type="text" id="text-input" class="text-overlay-input" placeholder="Enter your text here..." maxlength="50">
+          <div class="d-flex align-items-center justify-content-between mt-2">
             <label class="small">Text Color:</label>
-            <div>
-              <input type="color" class="color-picker" id="text-color" value="#ffffff" title="Text Color">
-              <input type="color" class="color-picker" id="text-outline" value="#000000" title="Text Outline">
-            </div>
+            <input type="color" class="color-picker" id="text-color" value="#ffffff" title="Text Color">
           </div>
           <div class="mt-2">
             <label for="text-size" class="small">Size:</label>
             <input type="range" id="text-size" class="form-range" min="12" max="48" value="24">
             <span id="text-size-value" class="small">24px</span>
           </div>
-        </div>
-
-        <!-- Layout Options -->
-        <div class="editor-controls">
-          <h5 class="mb-3">📐 Layout</h5>
-          <div class="text-center">
-            <button class="btn btn-outline-primary" id="layout-vertical" data-layout="vertical">Vertical Strip</button>
-            <button class="btn btn-outline-primary" id="layout-grid" data-layout="grid">Grid Layout</button>
-          </div>
           <div class="mt-2">
-            <label class="small">Background:</label>
-            <input type="color" class="color-picker" id="bg-color" value="#ffffff" title="Background Color">
+            <button id="add-text-btn" class="btn btn-sm btn-primary me-2">Add Text</button>
+            <button id="clear-text-btn" class="btn btn-sm btn-outline-secondary">Clear All</button>
           </div>
         </div>
 
@@ -103,61 +91,36 @@
             <p class="mt-2">Processing your photos...</p>
           </div>
 
-          <!-- Photo Strip Canvas -->
-          <canvas id="photo-strip-canvas" class="photo-strip-canvas mb-3" width="400" height="1200"></canvas>
+          <!-- Canvas Container -->
+          <div id="canvas-container" class="mb-3">
+            <canvas id="photo-strip-canvas" class="photo-strip-canvas" width="600" height="1800"></canvas>
+          </div>
           
           <!-- Action Buttons -->
           <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-            <button id="regenerate-btn" class="btn btn-info btn-lg">
-              🔄 Regenerate
+            <button id="resetBtn" class="btn btn-warning btn-lg">
+              🔄 Reset
             </button>
-            <button id="download-btn" class="btn btn-success btn-lg">
-              💾 Download Photo Strip
+            <button id="downloadBtn" class="btn btn-success btn-lg">
+              💾 Download
             </button>
-            <button id="share-btn" class="btn btn-primary btn-lg">
-              📧 Email Photo Strip
+            <button id="saveBtn" class="btn btn-primary btn-lg">
+              📁 Save to Gallery
             </button>
           </div>
 
           <!-- Back to Start -->
           <div class="mt-4">
-            <a href="index.html" class="btn btn-outline-secondary">
+            <button id="homeBtn" class="btn btn-outline-secondary">
               ← Start New Session
+            </button>
+            <a href="gallery.html" class="btn btn-outline-info">
+              View Gallery →
             </a>
           </div>
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- Bootstrap Modal for Email -->
-  <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="emailModalLabel">📧 Email Your Photo Strip</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="recipient-email" class="form-label">Send to:</label>
-            <input type="email" class="form-control" id="recipient-email" placeholder="Enter email address">
-            <div class="form-text">We'll send your photo strip to this email address</div>
-          </div>
-          <div class="mb-3">
-            <label for="email-message" class="form-label">Message (optional):</label>
-            <textarea class="form-control" id="email-message" rows="3" placeholder="Add a personal message..."></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="send-email-btn">
-            <span id="email-spinner" class="spinner-border spinner-border-sm me-2" style="display: none;"></span>
-            Send Email
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
