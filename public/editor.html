@@ -28,6 +28,17 @@
       margin-right: 5px;
       border: 2px solid #dee2e6;
     }
+
+    .position-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .orientation-controls {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -82,33 +93,60 @@
 
         <!-- Text Overlay -->
         <div class="editor-controls">
-          <h5 class="mb-3">✏️ Add Text</h5>
+          <h5 class="mb-3">✏️ Add Text to Template Border</h5>
           <input type="text" id="text-input" class="text-overlay-input" placeholder="Enter your text here..." maxlength="50">
+          
           <div class="d-flex align-items-center justify-content-between mt-2">
             <label class="small">Text Color:</label>
             <input type="color" class="color-picker" id="text-color" value="#000000" title="Text Color">
           </div>
+          
           <div class="mt-2">
             <label for="text-size" class="small">Size:</label>
             <input type="range" id="text-size" class="form-range" min="12" max="48" value="24">
             <span id="text-size-value" class="small">24px</span>
           </div>
-          <div class="mt-2">
-            <label class="small d-block">Text Position:</label>
-            <div class="btn-group w-100" role="group">
-              <input type="radio" class="btn-check" name="text-position" id="text-top" value="top" checked>
-              <label class="btn btn-outline-info btn-sm" for="text-top">Top</label>
-              
-              <input type="radio" class="btn-check" name="text-position" id="text-middle" value="middle">
-              <label class="btn btn-outline-info btn-sm" for="text-middle">Middle</label>
-              
-              <input type="radio" class="btn-check" name="text-position" id="text-bottom" value="bottom">
-              <label class="btn btn-outline-info btn-sm" for="text-bottom">Bottom</label>
+          
+          <div class="mt-3">
+            <label class="small d-block mb-2">📍 Text Position:</label>
+            <div class="position-grid">
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-top" value="top" checked>
+                <label class="btn btn-outline-info btn-sm w-100" for="text-top">⬆️ Top</label>
+              </div>
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-bottom" value="bottom">
+                <label class="btn btn-outline-info btn-sm w-100" for="text-bottom">⬇️ Bottom</label>
+              </div>
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-left" value="left">
+                <label class="btn btn-outline-info btn-sm w-100" for="text-left">⬅️ Left</label>
+              </div>
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-right" value="right">
+                <label class="btn btn-outline-info btn-sm w-100" for="text-right">➡️ Right</label>
+              </div>
             </div>
           </div>
-          <div class="mt-2">
+
+          <div class="orientation-controls">
+            <label class="small d-block mb-2">🔄 Text Orientation:</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="text-orientation" id="text-horizontal" value="horizontal" checked>
+              <label class="btn btn-outline-secondary btn-sm" for="text-horizontal">↔️ Horizontal</label>
+              
+              <input type="radio" class="btn-check" name="text-orientation" id="text-vertical" value="vertical">
+              <label class="btn btn-outline-secondary btn-sm" for="text-vertical">↕️ Vertical</label>
+            </div>
+          </div>
+          
+          <div class="mt-3">
             <button id="add-text-btn" class="btn btn-sm btn-primary me-2">Add Text</button>
             <button id="clear-text-btn" class="btn btn-sm btn-outline-secondary">Clear All</button>
+          </div>
+
+          <div class="text-position-preview">
+            <small>📝 Text will appear in the template border, keeping photos clear</small>
           </div>
         </div>
 
@@ -180,7 +218,7 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- Editor Script -->
+  <!-- Enhanced Editor Script -->
   <script src="assets/js/editor.js"></script>
 
 </body>

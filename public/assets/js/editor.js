@@ -12,7 +12,7 @@ class PhotoStripEditor {
     this.stripWidth = 600;
     this.stripHeight = 1800; // For 4-6 photos vertically
     this.photoSpacing = 20;
-    this.borderWidth = 40;
+    this.borderWidth = 80; // Increased border for text space
     
     this.init();
   }
@@ -91,6 +91,10 @@ class PhotoStripEditor {
     this.textSizeValue = document.getElementById('text-size-value');
     this.addTextBtn = document.getElementById('add-text-btn');
     this.clearTextBtn = document.getElementById('clear-text-btn');
+    
+    // Text position controls
+    this.textPositionInputs = document.querySelectorAll('input[name="text-position"]');
+    this.textOrientationInputs = document.querySelectorAll('input[name="text-orientation"]');
   }
 
   attachEventListeners() {
@@ -116,6 +120,16 @@ class PhotoStripEditor {
         this.textSizeValue.textContent = e.target.value + 'px';
       });
     }
+
+    // Text position change
+    this.textPositionInputs.forEach(input => {
+      input.addEventListener('change', () => this.generatePhotoStrip());
+    });
+
+    // Text orientation change
+    this.textOrientationInputs.forEach(input => {
+      input.addEventListener('change', () => this.generatePhotoStrip());
+    });
 
     // Action buttons
     if (this.downloadBtn) {
@@ -235,12 +249,16 @@ class PhotoStripEditor {
       return;
     }
 
+    // Get selected position and orientation
+    const selectedPosition = document.querySelector('input[name="text-position"]:checked')?.value || 'top';
+    const selectedOrientation = document.querySelector('input[name="text-orientation"]:checked')?.value || 'horizontal';
+
     const overlay = {
       text: text,
-      color: this.textColorPicker?.value || '#ffffff',
+      color: this.textColorPicker?.value || '#000000',
       size: parseInt(this.textSizeSlider?.value) || 24,
-      x: this.stripWidth / 2, // Center horizontally
-      y: 100 + (this.textOverlays.length * 50), // Stack vertically
+      position: selectedPosition, // top, bottom, left, right
+      orientation: selectedOrientation, // horizontal, vertical
       id: Date.now()
     };
 
@@ -254,7 +272,7 @@ class PhotoStripEditor {
     // Regenerate strip
     this.generatePhotoStrip();
     
-    this.showStatus(`Text overlay "${text}" added!`);
+    this.showStatus(`Text overlay "${text}" added to ${selectedPosition}!`);
   }
 
   clearTextOverlays() {
@@ -279,10 +297,8 @@ class PhotoStripEditor {
       this.context.fillStyle = '#ffffff';
       this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-      // Add border
-      this.context.fillStyle = '#f8f9fa';
-      this.context.fillRect(0, 0, this.canvas.width, this.borderWidth);
-      this.context.fillRect(0, this.canvas.height - this.borderWidth, this.canvas.width, this.borderWidth);
+      // Draw template borders/background
+      this.drawTemplateBorders();
 
       if (this.selectedPhotos.length === 0) {
         // Show message when no photos selected
@@ -294,21 +310,23 @@ class PhotoStripEditor {
         return;
       }
 
-      // Calculate photo dimensions
-      const availableHeight = this.canvas.height - (2 * this.borderWidth) - ((this.selectedPhotos.length - 1) * this.photoSpacing);
+      // Calculate photo area dimensions (excluding borders)
+      const photoAreaWidth = this.canvas.width - (2 * this.borderWidth);
+      const photoAreaHeight = this.canvas.height - (2 * this.borderWidth);
+      const availableHeight = photoAreaHeight - ((this.selectedPhotos.length - 1) * this.photoSpacing);
       const photoHeight = Math.floor(availableHeight / this.selectedPhotos.length);
-      const photoWidth = this.canvas.width - (2 * this.borderWidth);
 
-      // Draw each selected photo
+      // Draw each selected photo in the center area
       for (let i = 0; i < this.selectedPhotos.length; i++) {
         const photo = this.selectedPhotos[i];
+        const x = this.borderWidth;
         const y = this.borderWidth + (i * (photoHeight + this.photoSpacing));
 
-        await this.drawPhotoWithFilter(photo.dataUrl, this.borderWidth, y, photoWidth, photoHeight);
+        await this.drawPhotoWithFilter(photo.dataUrl, x, y, photoAreaWidth, photoHeight);
       }
 
-      // Add text overlays
-      this.drawTextOverlays();
+      // Add text overlays in border areas
+      this.drawTextOverlaysInBorders();
 
       // Add watermark/branding
       this.addBranding();
@@ -321,6 +339,121 @@ class PhotoStripEditor {
       this.showError('Failed to generate photo strip. Please try again.');
       this.showLoading(false);
     }
+  }
+
+  drawTemplateBorders() {
+    // Draw border background
+    this.context.fillStyle = '#f8f9fa';
+    
+    // Top border
+    this.context.fillRect(0, 0, this.canvas.width, this.borderWidth);
+    
+    // Bottom border
+    this.context.fillRect(0, this.canvas.height - this.borderWidth, this.canvas.width, this.borderWidth);
+    
+    // Left border
+    this.context.fillRect(0, this.borderWidth, this.borderWidth, this.canvas.height - (2 * this.borderWidth));
+    
+    // Right border
+    this.context.fillRect(this.canvas.width - this.borderWidth, this.borderWidth, this.borderWidth, this.canvas.height - (2 * this.borderWidth));
+
+    // Add border lines
+    this.context.strokeStyle = '#dee2e6';
+    this.context.lineWidth = 2;
+    this.context.strokeRect(this.borderWidth, this.borderWidth, 
+                           this.canvas.width - (2 * this.borderWidth), 
+                           this.canvas.height - (2 * this.borderWidth));
+  }
+
+  drawTextOverlaysInBorders() {
+    this.textOverlays.forEach((overlay, index) => {
+      this.context.fillStyle = overlay.color;
+      this.context.font = `bold ${overlay.size}px Arial`;
+      
+      let x, y, maxWidth;
+      
+      // Calculate position based on overlay.position
+      switch (overlay.position) {
+        case 'top':
+          x = this.canvas.width / 2;
+          y = (this.borderWidth / 2) + (overlay.size / 2) + (index * (overlay.size + 5));
+          maxWidth = this.canvas.width - 20;
+          this.context.textAlign = 'center';
+          if (overlay.orientation === 'horizontal') {
+            this.context.save();
+            this.context.translate(x, y);
+            this.context.fillText(overlay.text, 0, 0);
+            this.context.restore();
+          } else {
+            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+          }
+          break;
+          
+        case 'bottom':
+          x = this.canvas.width / 2;
+          y = this.canvas.height - (this.borderWidth / 2) + (overlay.size / 2) - (index * (overlay.size + 5));
+          maxWidth = this.canvas.width - 20;
+          this.context.textAlign = 'center';
+          if (overlay.orientation === 'horizontal') {
+            this.context.save();
+            this.context.translate(x, y);
+            this.context.fillText(overlay.text, 0, 0);
+            this.context.restore();
+          } else {
+            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+          }
+          break;
+          
+        case 'left':
+          x = this.borderWidth / 2;
+          y = (this.canvas.height / 2) + (index * (overlay.size + 10));
+          maxWidth = this.borderWidth - 10;
+          this.context.textAlign = 'center';
+          if (overlay.orientation === 'vertical') {
+            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+          } else {
+            // Rotate text 90 degrees for horizontal text in vertical space
+            this.context.save();
+            this.context.translate(x, y);
+            this.context.rotate(-Math.PI / 2);
+            this.context.fillText(overlay.text, 0, 0);
+            this.context.restore();
+          }
+          break;
+          
+        case 'right':
+          x = this.canvas.width - (this.borderWidth / 2);
+          y = (this.canvas.height / 2) + (index * (overlay.size + 10));
+          maxWidth = this.borderWidth - 10;
+          this.context.textAlign = 'center';
+          if (overlay.orientation === 'vertical') {
+            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+          } else {
+            // Rotate text 90 degrees for horizontal text in vertical space
+            this.context.save();
+            this.context.translate(x, y);
+            this.context.rotate(Math.PI / 2);
+            this.context.fillText(overlay.text, 0, 0);
+            this.context.restore();
+          }
+          break;
+      }
+    });
+  }
+
+  drawVerticalText(text, x, y, color, size) {
+    this.context.fillStyle = color;
+    this.context.font = `bold ${size}px Arial`;
+    this.context.textAlign = 'center';
+    
+    // Draw each character vertically
+    const chars = text.split('');
+    const charHeight = size + 5;
+    const startY = y - ((chars.length - 1) * charHeight) / 2;
+    
+    chars.forEach((char, index) => {
+      this.context.fillText(char, x, startY + (index * charHeight));
+    });
   }
 
   async drawPhotoWithFilter(imageSrc, x, y, width, height) {
@@ -422,32 +555,14 @@ class PhotoStripEditor {
     }
   }
 
-  drawTextOverlays() {
-    this.textOverlays.forEach(overlay => {
-      // Add text shadow for better visibility
-      this.context.shadowColor = 'rgba(0, 0, 0, 0.5)';
-      this.context.shadowOffsetX = 2;
-      this.context.shadowOffsetY = 2;
-      this.context.shadowBlur = 3;
-      
-      this.context.fillStyle = overlay.color;
-      this.context.font = `bold ${overlay.size}px Arial`;
-      this.context.textAlign = 'center';
-      this.context.fillText(overlay.text, overlay.x, overlay.y);
-      
-      // Reset shadow
-      this.context.shadowColor = 'transparent';
-    });
-  }
-
   addBranding() {
-    // Add subtle branding/date at bottom of strip
+    // Add subtle branding at the very bottom
     this.context.fillStyle = '#6c757d';
-    this.context.font = '12px Arial';
+    this.context.font = '10px Arial';
     this.context.textAlign = 'center';
     
     const date = new Date().toLocaleDateString();
-    this.context.fillText(`📸 Photobooth - ${date}`, this.canvas.width / 2, this.canvas.height - 10);
+    this.context.fillText(`📸 Photobooth - ${date}`, this.canvas.width / 2, this.canvas.height - 5);
   }
 
   downloadPhotoStrip() {
@@ -538,6 +653,12 @@ class PhotoStripEditor {
       if (this.textSizeValue) {
         this.textSizeValue.textContent = '24px';
       }
+      
+      // Reset text position and orientation
+      const topPosition = document.getElementById('text-top');
+      const horizontalOrientation = document.getElementById('text-horizontal');
+      if (topPosition) topPosition.checked = true;
+      if (horizontalOrientation) horizontalOrientation.checked = true;
       
       // Regenerate strip
       this.generatePhotoStrip();
