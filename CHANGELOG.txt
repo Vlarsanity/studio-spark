@@ -40,3 +40,16 @@ All notable changes to this project will be documented here.
 ### PATCH
 - editor page fixed issues
 ---
+
+## [0.3.5] - 2025-07-25
+### PATCH
+- New template added
+- editor page revised
+---
+
+## [0.3.6] - 2025-07-26
+### PATCH
+- updated template orientation display
+- added option where to place text
+- added background theme 
+---
