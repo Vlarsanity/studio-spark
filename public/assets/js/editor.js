@@ -6,6 +6,8 @@ class PhotoStripEditor {
     this.selectedPhotos = [];
     this.currentFilter = 'none';
     this.textOverlays = [];
+    this.currentTheme = 'classic'; // Add theme support
+    this.customBgColor = '#ffffff'; // Add custom background color
     this.isInitialized = false;
     
     // Template dimensions (adjust as needed)
@@ -84,6 +86,19 @@ class PhotoStripEditor {
       contrast: document.getElementById('filter-contrast')
     };
 
+    // Theme buttons
+    this.themeButtons = {
+      classic: document.getElementById('theme-classic'),
+      gradient1: document.getElementById('theme-gradient1'),
+      gradient2: document.getElementById('theme-gradient2'),
+      gradient3: document.getElementById('theme-gradient3'),
+      pattern1: document.getElementById('theme-pattern1'),
+      pattern2: document.getElementById('theme-pattern2')
+    };
+
+    // Custom background color picker
+    this.customBgColorPicker = document.getElementById('custom-bg-color');
+
     // Text overlay controls
     this.textInput = document.getElementById('text-input');
     this.textColorPicker = document.getElementById('text-color');
@@ -104,6 +119,21 @@ class PhotoStripEditor {
         button.addEventListener('click', () => this.applyFilter(filter));
       }
     });
+
+    // Theme buttons
+    Object.entries(this.themeButtons).forEach(([theme, button]) => {
+      if (button) {
+        button.addEventListener('click', () => this.applyTheme(theme));
+      }
+    });
+
+    // Custom background color picker
+    if (this.customBgColorPicker) {
+      this.customBgColorPicker.addEventListener('change', (e) => {
+        this.customBgColor = e.target.value;
+        this.applyTheme('custom');
+      });
+    }
 
     // Text overlay controls
     if (this.addTextBtn) {
@@ -242,6 +272,30 @@ class PhotoStripEditor {
     this.showStatus(`Filter "${filterType}" applied!`);
   }
 
+  applyTheme(themeType) {
+    // Update active theme button
+    Object.values(this.themeButtons).forEach(btn => {
+      if (btn) btn.classList.remove('active');
+    });
+    
+    if (this.themeButtons[themeType]) {
+      this.themeButtons[themeType].classList.add('active');
+    } else if (themeType === 'custom') {
+      // Handle custom theme - don't highlight any preset theme button
+      Object.values(this.themeButtons).forEach(btn => {
+        if (btn) btn.classList.remove('active');
+      });
+    }
+
+    // Store current theme
+    this.currentTheme = themeType;
+    
+    // Regenerate strip with new theme
+    this.generatePhotoStrip();
+    
+    this.showStatus(`Theme "${themeType}" applied!`);
+  }
+
   addTextOverlay() {
     const text = this.textInput?.value.trim();
     if (!text) {
@@ -293,9 +347,8 @@ class PhotoStripEditor {
     this.showLoading(true);
 
     try {
-      // Clear canvas
-      this.context.fillStyle = '#ffffff';
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      // Clear canvas and apply theme background
+      this.drawThemeBackground();
 
       // Draw template borders/background
       this.drawTemplateBorders();
@@ -341,34 +394,162 @@ class PhotoStripEditor {
     }
   }
 
-  drawTemplateBorders() {
-    // Draw border background
-    this.context.fillStyle = '#f8f9fa';
-    
-    // Top border
-    this.context.fillRect(0, 0, this.canvas.width, this.borderWidth);
-    
-    // Bottom border
-    this.context.fillRect(0, this.canvas.height - this.borderWidth, this.canvas.width, this.borderWidth);
-    
-    // Left border
-    this.context.fillRect(0, this.borderWidth, this.borderWidth, this.canvas.height - (2 * this.borderWidth));
-    
-    // Right border
-    this.context.fillRect(this.canvas.width - this.borderWidth, this.borderWidth, this.borderWidth, this.canvas.height - (2 * this.borderWidth));
+  drawThemeBackground() {
+    // Clear canvas first
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Add border lines
-    this.context.strokeStyle = '#dee2e6';
-    this.context.lineWidth = 2;
+    switch (this.currentTheme) {
+      case 'classic':
+        this.context.fillStyle = '#ffffff';
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        break;
+
+      case 'gradient1': // Sunset
+        const gradient1 = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient1.addColorStop(0, '#ff7e5f');
+        gradient1.addColorStop(1, '#feb47b');
+        this.context.fillStyle = gradient1;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        break;
+
+      case 'gradient2': // Ocean
+        const gradient2 = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient2.addColorStop(0, '#667eea');
+        gradient2.addColorStop(1, '#764ba2');
+        this.context.fillStyle = gradient2;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        break;
+
+      case 'gradient3': // Forest
+        const gradient3 = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient3.addColorStop(0, '#11998e');
+        gradient3.addColorStop(1, '#38ef7d');
+        this.context.fillStyle = gradient3;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        break;
+
+      case 'pattern1': // Dots
+        this.context.fillStyle = '#f8f9fa';
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawDotPattern();
+        break;
+
+      case 'pattern2': // Stripes
+        this.drawStripePattern();
+        break;
+
+      case 'custom':
+        this.context.fillStyle = this.customBgColor;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        break;
+
+      default:
+        this.context.fillStyle = '#ffffff';
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+  }
+
+  drawDotPattern() {
+    this.context.fillStyle = '#e9ecef';
+    const dotSize = 4;
+    const spacing = 20;
+    
+    for (let x = spacing; x < this.canvas.width; x += spacing) {
+      for (let y = spacing; y < this.canvas.height; y += spacing) {
+        this.context.beginPath();
+        this.context.arc(x, y, dotSize, 0, 2 * Math.PI);
+        this.context.fill();
+      }
+    }
+  }
+
+  drawStripePattern() {
+    const stripeWidth = 30;
+    let isLight = true;
+    
+    for (let x = 0; x < this.canvas.width; x += stripeWidth) {
+      this.context.fillStyle = isLight ? '#f8f9fa' : '#e9ecef';
+      this.context.fillRect(x, 0, stripeWidth, this.canvas.height);
+      isLight = !isLight;
+    }
+  }
+
+  drawTemplateBorders() {
+    // Don't draw over the theme background in border areas!
+    // Only add a subtle frame around the photo area
+    
+    // Add border lines around the photo area (inner rectangle)
+    this.context.strokeStyle = this.getStrokeColorForTheme();
+    this.context.lineWidth = 3;
     this.context.strokeRect(this.borderWidth, this.borderWidth, 
                            this.canvas.width - (2 * this.borderWidth), 
                            this.canvas.height - (2 * this.borderWidth));
+    
+    // Add a subtle inner shadow effect for depth (optional)
+    this.context.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    this.context.lineWidth = 1;
+    this.context.strokeRect(this.borderWidth + 1, this.borderWidth + 1, 
+                           this.canvas.width - (2 * this.borderWidth) - 2, 
+                           this.canvas.height - (2 * this.borderWidth) - 2);
+  }
+
+  getBorderColorForTheme() {
+    // Return appropriate border color based on current theme
+    switch (this.currentTheme) {
+      case 'gradient1':
+      case 'gradient2':
+      case 'gradient3':
+        return 'rgba(255, 255, 255, 0.9)';
+      case 'pattern1':
+      case 'pattern2':
+        return 'rgba(248, 249, 250, 0.95)';
+      default:
+        return 'rgba(248, 249, 250, 0.95)';
+    }
+  }
+
+  getStrokeColorForTheme() {
+    // Return appropriate stroke color based on current theme
+    switch (this.currentTheme) {
+      case 'gradient1':
+      case 'gradient2':
+      case 'gradient3':
+        return 'rgba(255, 255, 255, 0.8)';
+      case 'pattern1':
+      case 'pattern2':
+        return 'rgba(0, 0, 0, 0.3)';
+      case 'custom':
+        // Choose stroke color based on background brightness
+        return this.isLightColor(this.customBgColor) ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.8)';
+      default:
+        return '#dee2e6';
+    }
+  }
+
+  // Helper function to determine if a color is light or dark
+  isLightColor(hexColor) {
+    // Convert hex to RGB
+    const r = parseInt(hexColor.substr(1, 2), 16);
+    const g = parseInt(hexColor.substr(3, 2), 16);
+    const b = parseInt(hexColor.substr(5, 2), 16);
+    
+    // Calculate relative luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5;
   }
 
   drawTextOverlaysInBorders() {
     this.textOverlays.forEach((overlay, index) => {
-      this.context.fillStyle = overlay.color;
+      // Adjust text color for better visibility on different themes
+      const textColor = this.getTextColorForTheme(overlay.color);
+      this.context.fillStyle = textColor;
       this.context.font = `bold ${overlay.size}px Arial`;
+      
+      // Add text shadow for better readability on complex backgrounds
+      this.context.shadowColor = textColor === '#ffffff' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+      this.context.shadowBlur = 2;
+      this.context.shadowOffsetX = 1;
+      this.context.shadowOffsetY = 1;
       
       let x, y, maxWidth;
       
@@ -385,7 +566,7 @@ class PhotoStripEditor {
             this.context.fillText(overlay.text, 0, 0);
             this.context.restore();
           } else {
-            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+            this.drawVerticalText(overlay.text, x, y, textColor, overlay.size);
           }
           break;
           
@@ -400,7 +581,7 @@ class PhotoStripEditor {
             this.context.fillText(overlay.text, 0, 0);
             this.context.restore();
           } else {
-            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+            this.drawVerticalText(overlay.text, x, y, textColor, overlay.size);
           }
           break;
           
@@ -410,7 +591,7 @@ class PhotoStripEditor {
           maxWidth = this.borderWidth - 10;
           this.context.textAlign = 'center';
           if (overlay.orientation === 'vertical') {
-            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+            this.drawVerticalText(overlay.text, x, y, textColor, overlay.size);
           } else {
             // Rotate text 90 degrees for horizontal text in vertical space
             this.context.save();
@@ -427,7 +608,7 @@ class PhotoStripEditor {
           maxWidth = this.borderWidth - 10;
           this.context.textAlign = 'center';
           if (overlay.orientation === 'vertical') {
-            this.drawVerticalText(overlay.text, x, y, overlay.color, overlay.size);
+            this.drawVerticalText(overlay.text, x, y, textColor, overlay.size);
           } else {
             // Rotate text 90 degrees for horizontal text in vertical space
             this.context.save();
@@ -438,7 +619,29 @@ class PhotoStripEditor {
           }
           break;
       }
+      
+      // Reset shadow
+      this.context.shadowColor = 'transparent';
+      this.context.shadowBlur = 0;
+      this.context.shadowOffsetX = 0;
+      this.context.shadowOffsetY = 0;
     });
+  }
+
+  getTextColorForTheme(originalColor) {
+    // For gradient themes, might want to use white text for better visibility
+    switch (this.currentTheme) {
+      case 'gradient1':
+      case 'gradient2':
+      case 'gradient3':
+        // If original color is too dark, use white for better contrast
+        if (originalColor === '#000000') {
+          return '#ffffff';
+        }
+        return originalColor;
+      default:
+        return originalColor;
+    }
   }
 
   drawVerticalText(text, x, y, color, size) {
@@ -604,6 +807,7 @@ class PhotoStripEditor {
         photoStrip: this.canvas.toDataURL('image/png'),
         savedAt: new Date().toISOString(),
         filters: this.currentFilter,
+        theme: this.currentTheme,
         textOverlays: this.textOverlays.length,
         sessionDate: this.sessionData.timestamp || new Date().toISOString()
       };
@@ -631,6 +835,8 @@ class PhotoStripEditor {
       // Reset selections
       this.selectedPhotos = [...this.sessionData.photos];
       this.currentFilter = 'none';
+      this.currentTheme = 'classic';
+      this.customBgColor = '#ffffff';
       this.textOverlays = [];
       
       // Reset UI
@@ -642,6 +848,19 @@ class PhotoStripEditor {
       });
       if (this.filterButtons.none) {
         this.filterButtons.none.classList.add('active');
+      }
+
+      // Reset theme buttons
+      Object.values(this.themeButtons).forEach(btn => {
+        if (btn) btn.classList.remove('active');
+      });
+      if (this.themeButtons.classic) {
+        this.themeButtons.classic.classList.add('active');
+      }
+
+      // Reset custom background color
+      if (this.customBgColorPicker) {
+        this.customBgColorPicker.value = '#ffffff';
       }
       
       // Clear text input
@@ -727,6 +946,7 @@ class PhotoStripEditor {
       sessionData: this.sessionData,
       selectedPhotos: this.selectedPhotos.length,
       currentFilter: this.currentFilter,
+      currentTheme: this.currentTheme,
       textOverlays: this.textOverlays.length,
       isInitialized: this.isInitialized
     };
