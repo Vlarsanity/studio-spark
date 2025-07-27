@@ -57,5 +57,5 @@ All notable changes to this project will be documented here.
 ## [0.3.7] - 2025-07-27
 ### PATCH
 - add enhanced UI with progress tracking and animations in camera.html
-- improve
+- implement modern UI with gradient design and animations in index.html
 ---
