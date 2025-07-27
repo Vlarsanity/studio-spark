@@ -53,3 +53,9 @@ All notable changes to this project will be documented here.
 - added option where to place text
 - added background theme 
 ---
+
+## [0.3.7] - 2025-07-27
+### PATCH
+- add enhanced UI with progress tracking and animations in camera.html
+- improve
+---
