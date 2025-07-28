@@ -4,17 +4,42 @@ All notable changes to this project will be documented here.
 
 ---
 
-## [0.1.0] - 2025-07-20
+## [0.4.8] - 2025-07-28
 ### MINOR
-- Enter Email Front End
-- Photo options: 4-shot and 6-shot modes
-- CHANGELOG, SEMANTIC VERSIONING, COMMIT MESSAGE
+- Seperate css file for camera.html
 ---
 
-## [0.1.1] - 2025-07-21
 ### PATCH
-- Adjusted 4 shots and 6 shots 
-- added sample template image
+- enchance ui/ux for the index.html and camera.html
+---
+
+## [0.3.7] - 2025-07-27
+### PATCH
+- add enhanced UI with progress tracking and animations in camera.html
+- implement modern UI with gradient design and animations in index.html
+---
+
+## [0.3.6] - 2025-07-26
+### PATCH
+- updated template orientation display
+- added option where to place text
+- added background theme 
+---
+
+## [0.3.5] - 2025-07-25
+### PATCH
+- New template added
+- editor page revised
+---
+
+## [0.3.4] - 2025-07-24
+### PATCH
+- editor page fixed issues
+---
+
+## [0.3.3] - 2025-07-23
+### MINOR
+- editor page and gallery page added
 ---
 
 ## [0.2.2] - 2025-07-22
@@ -25,37 +50,16 @@ All notable changes to this project will be documented here.
 - fix sample template image
 ---
 
-## [0.3.3] - 2025-07-23
+## [0.1.1] - 2025-07-21
+### PATCH
+- Adjusted 4 shots and 6 shots 
+- added sample template image
+---
+
+
+## [0.1.0] - 2025-07-20
 ### MINOR
-- editor page and gallery page added
----
-
-### PATCH
-- camera access adjusted
-- editor page
-- added css style for camera.html
----
-
-## [0.3.4] - 2025-07-24
-### PATCH
-- editor page fixed issues
----
-
-## [0.3.5] - 2025-07-25
-### PATCH
-- New template added
-- editor page revised
----
-
-## [0.3.6] - 2025-07-26
-### PATCH
-- updated template orientation display
-- added option where to place text
-- added background theme 
----
-
-## [0.3.7] - 2025-07-27
-### PATCH
-- add enhanced UI with progress tracking and animations in camera.html
-- implement modern UI with gradient design and animations in index.html
+- Enter Email Front End
+- Photo options: 4-shot and 6-shot modes
+- CHANGELOG, SEMANTIC VERSIONING, COMMIT MESSAGE
 ---
