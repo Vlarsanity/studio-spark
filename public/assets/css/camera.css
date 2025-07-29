@@ -1,4 +1,3 @@
-
 /* Camera-specific styles that extend the main CSS */
 .camera-page {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -164,6 +163,7 @@
   box-shadow: var(--shadow-hover);
   transition: var(--transition);
   background: #f8f9fa;
+  display: block;
 }
 
 #camera-video:hover {
