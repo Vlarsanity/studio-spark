@@ -4,6 +4,12 @@ All notable changes to this project will be documented here.
 
 ---
 
+## [0.4.8] - 2025-07-29
+### MINOR
+- adjusted ui/ux for the camera.html
+- adjusted css for camera.html
+---
+
 ## [0.4.8] - 2025-07-28
 ### MINOR
 - Seperate css file for camera.html
