@@ -5,64 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photo Booth - Editor</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <style>
-    .theme-btn.active {
-      background-color: #0d6efd;
-      color: white;
-      border-color: #0d6efd;
-    }
-    
-    .text-position-preview {
-      font-size: 12px;
-      color: #6c757d;
-      text-align: center;
-      margin-top: 5px;
-    }
-    
-    .theme-preview {
-      width: 30px;
-      height: 30px;
-      border-radius: 4px;
-      display: inline-block;
-      margin-right: 5px;
-      border: 2px solid #dee2e6;
-    }
-
-    .position-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .orientation-controls {
-      margin-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/editor.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  
 </head>
-<body class="bg-light">
+<body class="editor-page">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark">
+  <!-- Animated Background Elements -->
+  <div class="bg-animation">
+    <div class="floating-element" style="--duration: 8s; --delay: 0s;"></div>
+    <div class="floating-element" style="--duration: 12s; --delay: 2s;"></div>
+    <div class="floating-element" style="--duration: 10s; --delay: 4s;"></div>
+    <div class="floating-element" style="--duration: 14s; --delay: 1s;"></div>
+    <div class="floating-element" style="--duration: 9s; --delay: 3s;"></div>
+  </div>
+
+  <!-- Glass Navbar -->
+  <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="index.html">📸 Photo Booth</a>
-      <span class="navbar-text">
-        <small>Editor</small>
-      </span>
+      <a class="navbar-brand" href="index.html">
+        <i class="fas fa-camera"></i> PhotoBooth
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a href="gallery.html" class="nav-link">
+          <i class="fas fa-images"></i> Gallery
+        </a>
+      </div>
     </div>
   </nav>
 
-  <div class="container py-4">
+  <div class="container main-container">
     
-    <!-- Session Info -->
-    <div id="session-info" class="session-info text-center">
-      <h4 class="mb-2">🎨 Photo Strip Editor</h4>
-      <p id="session-details" class="mb-0">Creating your photo strip...</p>
+    <!-- Session Header -->
+    <div class="session-info">
+      <h2 class="session-title">
+        <i class="fas fa-palette"></i> Photo Strip Editor
+      </h2>
+      <p id="session-details" class="session-subtitle">Customize your amazing photo strip</p>
     </div>
 
     <!-- Error/Status Messages -->
-    <div id="status-message" class="alert" style="display: none;" role="alert"></div>
+    <div id="status-message" class="alert status-message" style="display: none;" role="alert"></div>
 
     <div class="row">
       
@@ -71,99 +54,114 @@
         
         <!-- Photo Selection -->
         <div class="editor-controls">
-          <h5 class="mb-3">📸 Your Photos</h5>
+          <h5><i class="fas fa-images"></i> Your Photos</h5>
           <div id="photo-thumbnails" class="row g-2">
             <!-- Thumbnails will be loaded here -->
           </div>
-          <small class="text-muted d-block text-center mt-2">Click photos to select/deselect</small>
+          <div class="text-helper">Click photos to select/deselect</div>
         </div>
 
         <!-- Filters -->
         <div class="editor-controls">
-          <h5 class="mb-3">🎨 Filters</h5>
+          <h5><i class="fas fa-magic"></i> Filters</h5>
           <div class="text-center">
-            <button id="filter-none" class="btn btn-outline-secondary filter-btn active">Original</button>
-            <button id="filter-grayscale" class="btn btn-outline-secondary filter-btn">B&W</button>
-            <button id="filter-sepia" class="btn btn-outline-secondary filter-btn">Sepia</button>
-            <button id="filter-vintage" class="btn btn-outline-secondary filter-btn">Vintage</button>
-            <button id="filter-bright" class="btn btn-outline-secondary filter-btn">Bright</button>
-            <button id="filter-contrast" class="btn btn-outline-secondary filter-btn">Contrast</button>
-          </div>
-        </div>
-
-        <!-- Text Overlay -->
-        <div class="editor-controls">
-          <h5 class="mb-3">✏️ Add Text to Template Border</h5>
-          <input type="text" id="text-input" class="text-overlay-input" placeholder="Enter your text here..." maxlength="50">
-          
-          <div class="d-flex align-items-center justify-content-between mt-2">
-            <label class="small">Text Color:</label>
-            <input type="color" class="color-picker" id="text-color" value="#000000" title="Text Color">
-          </div>
-          
-          <div class="mt-2">
-            <label for="text-size" class="small">Size:</label>
-            <input type="range" id="text-size" class="form-range" min="12" max="48" value="24">
-            <span id="text-size-value" class="small">24px</span>
-          </div>
-          
-          <div class="mt-3">
-            <label class="small d-block mb-2">📍 Text Position:</label>
-            <div class="position-grid">
-              <div>
-                <input type="radio" class="btn-check" name="text-position" id="text-top" value="top" checked>
-                <label class="btn btn-outline-info btn-sm w-100" for="text-top">⬆️ Top</label>
-              </div>
-              <div>
-                <input type="radio" class="btn-check" name="text-position" id="text-bottom" value="bottom">
-                <label class="btn btn-outline-info btn-sm w-100" for="text-bottom">⬇️ Bottom</label>
-              </div>
-              <div>
-                <input type="radio" class="btn-check" name="text-position" id="text-left" value="left">
-                <label class="btn btn-outline-info btn-sm w-100" for="text-left">⬅️ Left</label>
-              </div>
-              <div>
-                <input type="radio" class="btn-check" name="text-position" id="text-right" value="right">
-                <label class="btn btn-outline-info btn-sm w-100" for="text-right">➡️ Right</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="orientation-controls">
-            <label class="small d-block mb-2">🔄 Text Orientation:</label>
-            <div class="btn-group w-100" role="group">
-              <input type="radio" class="btn-check" name="text-orientation" id="text-horizontal" value="horizontal" checked>
-              <label class="btn btn-outline-secondary btn-sm" for="text-horizontal">↔️ Horizontal</label>
-              
-              <input type="radio" class="btn-check" name="text-orientation" id="text-vertical" value="vertical">
-              <label class="btn btn-outline-secondary btn-sm" for="text-vertical">↕️ Vertical</label>
-            </div>
-          </div>
-          
-          <div class="mt-3">
-            <button id="add-text-btn" class="btn btn-sm btn-primary me-2">Add Text</button>
-            <button id="clear-text-btn" class="btn btn-sm btn-outline-secondary">Clear All</button>
-          </div>
-
-          <div class="text-position-preview">
-            <small>📝 Text will appear in the template border, keeping photos clear</small>
+            <button id="filter-none" class="filter-btn active">Original</button>
+            <button id="filter-grayscale" class="filter-btn">B&W</button>
+            <button id="filter-sepia" class="filter-btn">Sepia</button>
+            <button id="filter-vintage" class="filter-btn">Vintage</button>
+            <button id="filter-bright" class="filter-btn">Bright</button>
+            <button id="filter-contrast" class="filter-btn">Contrast</button>
           </div>
         </div>
 
         <!-- Theme Selection -->
         <div class="editor-controls">
-          <h5 class="mb-3">🎨 Background Theme</h5>
+          <h5><i class="fas fa-paintbrush"></i> Background Theme</h5>
           <div class="text-center">
-            <button id="theme-classic" class="btn btn-outline-secondary theme-btn active btn-sm me-1 mb-2" data-theme="classic">Classic</button>
-            <button id="theme-gradient1" class="btn btn-outline-secondary theme-btn btn-sm me-1 mb-2" data-theme="gradient1">Sunset</button>
-            <button id="theme-gradient2" class="btn btn-outline-secondary theme-btn btn-sm me-1 mb-2" data-theme="gradient2">Ocean</button>
-            <button id="theme-gradient3" class="btn btn-outline-secondary theme-btn btn-sm me-1 mb-2" data-theme="gradient3">Forest</button>
-            <button id="theme-pattern1" class="btn btn-outline-secondary theme-btn btn-sm me-1 mb-2" data-theme="pattern1">Dots</button>
-            <button id="theme-pattern2" class="btn btn-outline-secondary theme-btn btn-sm me-1 mb-2" data-theme="pattern2">Stripes</button>
+            <button id="theme-classic" class="theme-btn active">Classic</button>
+            <button id="theme-gradient1" class="theme-btn">Sunset</button>
+            <button id="theme-gradient2" class="theme-btn">Ocean</button>
+            <button id="theme-gradient3" class="theme-btn">Forest</button>
+            <button id="theme-pattern1" class="theme-btn">Dots</button>
+            <button id="theme-pattern2" class="theme-btn">Stripes</button>
           </div>
-          <div class="mt-2">
-            <label class="small">Custom Background:</label>
+          <div class="mt-3 d-flex align-items-center justify-content-between">
+            <label class="text-helper">Custom Background:</label>
             <input type="color" class="color-picker" id="custom-bg-color" value="#ffffff" title="Custom Background Color">
+          </div>
+        </div>
+
+        <!-- Text Overlay -->
+        <div class="editor-controls">
+          <h5><i class="fas fa-font"></i> Add Text to Template Border</h5>
+          <input type="text" id="text-input" class="text-overlay-input mb-3" placeholder="Enter your text here..." maxlength="50">
+          
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <label class="text-helper">Text Color:</label>
+            <input type="color" class="color-picker" id="text-color" value="#000000" title="Text Color">
+          </div>
+          
+          <div class="mb-3">
+            <label for="text-size" class="text-helper d-block">Size: <span id="text-size-value">24px</span></label>
+            <input type="range" id="text-size" class="form-range" min="12" max="48" value="24">
+          </div>
+          
+          <div class="mb-3">
+            <label class="text-helper d-block mb-2"><i class="fas fa-location-dot"></i> Text Position:</label>
+            <div class="position-grid">
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-top" value="top" checked>
+                <label class="btn btn-outline-info btn-sm w-100" for="text-top">
+                  <i class="fas fa-arrow-up"></i> Top
+                </label>
+              </div>
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-bottom" value="bottom">
+                <label class="btn btn-outline-info btn-sm w-100" for="text-bottom">
+                  <i class="fas fa-arrow-down"></i> Bottom
+                </label>
+              </div>
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-left" value="left">
+                <label class="btn btn-outline-info btn-sm w-100" for="text-left">
+                  <i class="fas fa-arrow-left"></i> Left
+                </label>
+              </div>
+              <div>
+                <input type="radio" class="btn-check" name="text-position" id="text-right" value="right">
+                <label class="btn btn-outline-info btn-sm w-100" for="text-right">
+                  <i class="fas fa-arrow-right"></i> Right
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="text-helper d-block mb-2"><i class="fas fa-rotate"></i> Text Orientation:</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="text-orientation" id="text-horizontal" value="horizontal" checked>
+              <label class="btn btn-outline-secondary btn-sm" for="text-horizontal">
+                <i class="fas fa-arrows-left-right"></i> Horizontal
+              </label>
+              
+              <input type="radio" class="btn-check" name="text-orientation" id="text-vertical" value="vertical">
+              <label class="btn btn-outline-secondary btn-sm" for="text-vertical">
+                <i class="fas fa-arrows-up-down"></i> Vertical
+              </label>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button id="add-text-btn" class="btn btn-sm btn-primary flex-fill">
+              <i class="fas fa-plus"></i> Add Text
+            </button>
+            <button id="clear-text-btn" class="btn btn-sm btn-outline-secondary flex-fill">
+              <i class="fas fa-trash"></i> Clear All
+            </button>
+          </div>
+
+          <div class="text-helper mt-2">
+            <i class="fas fa-info-circle"></i> Text will appear in the template border, keeping photos clear
           </div>
         </div>
 
@@ -171,42 +169,44 @@
 
       <!-- Right Column - Canvas Preview -->
       <div class="col-lg-8">
-        <div class="text-center">
-          <h5 class="mb-3">🖼️ Preview</h5>
+        <div class="canvas-preview-section">
+          <h5 class="preview-title">
+            <i class="fas fa-eye"></i> Preview
+          </h5>
           
           <!-- Loading Spinner -->
-          <div id="loading-spinner" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
+          <div id="loading-spinner" class="loading-container">
+            <div class="spinner-border" role="status">
               <span class="visually-hidden">Creating photo strip...</span>
             </div>
-            <p class="mt-2">Processing your photos...</p>
+            <p class="mt-3">Processing your photos...</p>
           </div>
 
           <!-- Canvas Container -->
-          <div id="canvas-container" class="mb-3">
+          <div id="canvas-container" class="canvas-container">
             <canvas id="photo-strip-canvas" class="photo-strip-canvas" width="600" height="1800"></canvas>
           </div>
           
           <!-- Action Buttons -->
-          <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-            <button id="resetBtn" class="btn btn-warning btn-lg">
-              🔄 Reset
+          <div class="action-buttons">
+            <button id="resetBtn" class="btn-action btn-warning-action">
+              <i class="fas fa-undo"></i> Reset
             </button>
-            <button id="downloadBtn" class="btn btn-success btn-lg">
-              💾 Download
+            <button id="downloadBtn" class="btn-action btn-success-action">
+              <i class="fas fa-download"></i> Download
             </button>
-            <button id="saveBtn" class="btn btn-primary btn-lg">
-              📁 Save to Gallery
+            <button id="saveBtn" class="btn-action btn-primary-action">
+              <i class="fas fa-save"></i> Save to Gallery
             </button>
           </div>
 
-          <!-- Back to Start -->
-          <div class="mt-4">
-            <button id="homeBtn" class="btn btn-outline-secondary">
-              ← Start New Session
+          <!-- Navigation Links -->
+          <div class="nav-links">
+            <button id="homeBtn" class="nav-link-custom">
+              <i class="fas fa-home"></i> Start New Session
             </button>
-            <a href="gallery.html" class="btn btn-outline-info">
-              View Gallery →
+            <a href="gallery.html" class="nav-link-custom">
+              <i class="fas fa-images"></i> View Gallery
             </a>
           </div>
         </div>
