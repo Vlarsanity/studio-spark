@@ -4,6 +4,12 @@ All notable changes to this project will be documented here.
 
 ---
 
+## [0.4.11] - 2025-07-31
+### MINOR
+- enchance ui/ux for the editor.html
+- improve css for the editor.html
+---
+
 ## [0.4.10] - 2025-07-30
 ### MINOR
 - enchance ui/ux for the editor.html
