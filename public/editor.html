@@ -22,7 +22,7 @@
 
   <!-- Glass Navbar -->
   <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
-    <div class="container">
+    <div class="container-fluid">
       <a class="navbar-brand" href="index.html">
         <i class="fas fa-camera"></i> PhotoBooth
       </a>
@@ -34,7 +34,7 @@
     </div>
   </nav>
 
-  <div class="container main-container">
+  <div class="main-container">
     
     <!-- Session Header -->
     <div class="session-info">
@@ -47,15 +47,16 @@
     <!-- Error/Status Messages -->
     <div id="status-message" class="alert status-message" style="display: none;" role="alert"></div>
 
-    <div class="row">
+    <!-- Full Width Layout -->
+    <div class="editor-layout">
       
-      <!-- Left Column - Editor Controls -->
-      <div class="col-lg-4">
+      <!-- Left Column - Editor Controls (40%) -->
+      <div class="editor-column">
         
         <!-- Photo Selection -->
         <div class="editor-controls">
           <h5><i class="fas fa-images"></i> Your Photos</h5>
-          <div id="photo-thumbnails" class="row g-2">
+          <div id="photo-thumbnails" class="row g-1">
             <!-- Thumbnails will be loaded here -->
           </div>
           <div class="text-helper">Click photos to select/deselect</div>
@@ -85,29 +86,29 @@
             <button id="theme-pattern1" class="theme-btn">Dots</button>
             <button id="theme-pattern2" class="theme-btn">Stripes</button>
           </div>
-          <div class="mt-3 d-flex align-items-center justify-content-between">
-            <label class="text-helper">Custom Background:</label>
+          <div class="mt-2-custom d-flex align-items-center justify-content-between">
+            <label class="text-helper">Custom:</label>
             <input type="color" class="color-picker" id="custom-bg-color" value="#ffffff" title="Custom Background Color">
           </div>
         </div>
 
         <!-- Text Overlay -->
         <div class="editor-controls">
-          <h5><i class="fas fa-font"></i> Add Text to Template Border</h5>
-          <input type="text" id="text-input" class="text-overlay-input mb-3" placeholder="Enter your text here..." maxlength="50">
+          <h5><i class="fas fa-font"></i> Add Text</h5>
+          <input type="text" id="text-input" class="text-overlay-input mb-2-custom" placeholder="Enter text..." maxlength="50">
           
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <label class="text-helper">Text Color:</label>
+          <div class="d-flex align-items-center justify-content-between mb-2-custom">
+            <label class="text-helper">Color:</label>
             <input type="color" class="color-picker" id="text-color" value="#000000" title="Text Color">
           </div>
           
-          <div class="mb-3">
+          <div class="mb-2-custom">
             <label for="text-size" class="text-helper d-block">Size: <span id="text-size-value">24px</span></label>
             <input type="range" id="text-size" class="form-range" min="12" max="48" value="24">
           </div>
           
-          <div class="mb-3">
-            <label class="text-helper d-block mb-2"><i class="fas fa-location-dot"></i> Text Position:</label>
+          <div class="mb-2-custom">
+            <label class="text-helper d-block mb-1"><i class="fas fa-location-dot"></i> Position:</label>
             <div class="position-grid">
               <div>
                 <input type="radio" class="btn-check" name="text-position" id="text-top" value="top" checked>
@@ -136,39 +137,39 @@
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="text-helper d-block mb-2"><i class="fas fa-rotate"></i> Text Orientation:</label>
+          <div class="mb-2-custom">
+            <label class="text-helper d-block mb-1"><i class="fas fa-rotate"></i> Orientation:</label>
             <div class="btn-group w-100" role="group">
               <input type="radio" class="btn-check" name="text-orientation" id="text-horizontal" value="horizontal" checked>
               <label class="btn btn-outline-secondary btn-sm" for="text-horizontal">
-                <i class="fas fa-arrows-left-right"></i> Horizontal
+                <i class="fas fa-arrows-left-right"></i> H
               </label>
               
               <input type="radio" class="btn-check" name="text-orientation" id="text-vertical" value="vertical">
               <label class="btn btn-outline-secondary btn-sm" for="text-vertical">
-                <i class="fas fa-arrows-up-down"></i> Vertical
+                <i class="fas fa-arrows-up-down"></i> V
               </label>
             </div>
           </div>
           
-          <div class="d-flex gap-2">
+          <div class="d-flex gap-1">
             <button id="add-text-btn" class="btn btn-sm btn-primary flex-fill">
-              <i class="fas fa-plus"></i> Add Text
+              <i class="fas fa-plus"></i> Add
             </button>
             <button id="clear-text-btn" class="btn btn-sm btn-outline-secondary flex-fill">
-              <i class="fas fa-trash"></i> Clear All
+              <i class="fas fa-trash"></i> Clear
             </button>
           </div>
 
-          <div class="text-helper mt-2">
-            <i class="fas fa-info-circle"></i> Text will appear in the template border, keeping photos clear
+          <div class="text-helper mt-1">
+            <i class="fas fa-info-circle"></i> Text appears in template border
           </div>
         </div>
 
       </div>
 
-      <!-- Right Column - Canvas Preview -->
-      <div class="col-lg-8">
+      <!-- Right Column - Canvas Preview (60%) -->
+      <div class="preview-column">
         <div class="canvas-preview-section">
           <h5 class="preview-title">
             <i class="fas fa-eye"></i> Preview
@@ -196,17 +197,17 @@
               <i class="fas fa-download"></i> Download
             </button>
             <button id="saveBtn" class="btn-action btn-primary-action">
-              <i class="fas fa-save"></i> Save to Gallery
+              <i class="fas fa-save"></i> Save
             </button>
           </div>
 
           <!-- Navigation Links -->
           <div class="nav-links">
             <button id="homeBtn" class="nav-link-custom">
-              <i class="fas fa-home"></i> Start New Session
+              <i class="fas fa-home"></i> New Session
             </button>
             <a href="gallery.html" class="nav-link-custom">
-              <i class="fas fa-images"></i> View Gallery
+              <i class="fas fa-images"></i> Gallery
             </a>
           </div>
         </div>
