@@ -1,4 +1,4 @@
-// Fixed gallery.js to match your actual data structure and localStorage keys
+// Enhanced gallery.js with improved error handling and features
 
 class PhotoBoothGallery {
   constructor() {
@@ -11,6 +11,7 @@ class PhotoBoothGallery {
   init() {
     this.loadSessions();
     this.bindEvents();
+    this.bindKeyboardEvents();
     this.showLoadingOverlay(false);
   }
 
@@ -38,6 +39,33 @@ class PhotoBoothGallery {
         this.downloadCurrentPhoto();
       });
     }
+
+    // Refresh button (if you want to add one)
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        this.refreshGallery();
+      });
+    }
+  }
+
+  bindKeyboardEvents() {
+    document.addEventListener('keydown', (e) => {
+      // Escape key to close modals
+      if (e.key === 'Escape') {
+        const openModals = document.querySelectorAll('.modal.show');
+        openModals.forEach(modal => {
+          const bsModal = bootstrap.Modal.getInstance(modal);
+          if (bsModal) bsModal.hide();
+        });
+      }
+      
+      // Ctrl/Cmd + R to refresh gallery
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        this.refreshGallery();
+      }
+    });
   }
 
   loadSessions() {
@@ -47,7 +75,24 @@ class PhotoBoothGallery {
       console.log('Raw stored sessions:', storedSessions); // Debug log
       
       if (storedSessions) {
-        this.sessions = JSON.parse(storedSessions);
+        const parsed = JSON.parse(storedSessions);
+        
+        // Validate session structure and filter out corrupt data
+        this.sessions = parsed.filter(session => {
+          if (!session) return false;
+          
+          // Session must have either photos array or photoStrip
+          const hasPhotos = (session.photos && Array.isArray(session.photos) && session.photos.length > 0);
+          const hasPhotoStrip = session.photoStrip;
+          
+          return hasPhotos || hasPhotoStrip;
+        });
+        
+        // If we filtered out corrupt sessions, update localStorage
+        if (this.sessions.length !== parsed.length) {
+          localStorage.setItem('photoSessions', JSON.stringify(this.sessions));
+          this.showStatusMessage('Some corrupted session data was cleaned up', 'info');
+        }
       } else {
         this.sessions = [];
       }
@@ -61,9 +106,24 @@ class PhotoBoothGallery {
       }
     } catch (error) {
       console.error('Error loading sessions:', error);
-      this.showStatusMessage('Error loading gallery data', 'error');
+      
+      // Clear corrupt data and reset
+      localStorage.removeItem('photoSessions');
+      this.sessions = [];
+      this.showStatusMessage('Gallery data was corrupted and has been reset', 'error');
       this.showEmptyState();
     }
+  }
+
+  refreshGallery() {
+    this.showLoadingOverlay(true, 'Refreshing gallery...');
+    
+    // Small delay to show the loading state
+    setTimeout(() => {
+      this.loadSessions();
+      this.showLoadingOverlay(false);
+      this.showStatusMessage('Gallery refreshed successfully', 'success');
+    }, 500);
   }
 
   displaySessions() {
@@ -112,7 +172,9 @@ class PhotoBoothGallery {
     const time = new Date(timestamp).toLocaleTimeString();
 
     // Get session name with fallback to email
-    const sessionName = session.sessionName || `${session.email} - ${session.layout} shots` || `Session ${index + 1}`;
+    const sessionName = session.sessionName || 
+                       (session.email ? `${session.email} - ${session.layout || 4} shots` : null) || 
+                       `Session ${index + 1}`;
     const sessionId = session.sessionId || `session_${index}`;
 
     // Create metadata items with consistent structure
@@ -190,7 +252,7 @@ class PhotoBoothGallery {
     return card;
   }
 
-  // Updated method to get photos matching your data structure
+  // Enhanced method to get photos matching your data structure
   getPhotosToDisplay(session) {
     console.log('Getting photos for session:', session); // Debug log
     
@@ -203,7 +265,13 @@ class PhotoBoothGallery {
     }
     // Priority 2: Individual photos array from camera
     else if (session.photos && Array.isArray(session.photos) && session.photos.length > 0) {
-      photos = session.photos.map(photo => photo.dataUrl || photo);
+      photos = session.photos.map(photo => {
+        if (typeof photo === 'string') return photo;
+        if (photo && typeof photo === 'object') {
+          return photo.dataUrl || photo.src || photo.url || null;
+        }
+        return null;
+      });
       console.log('Using individual photos from camera:', photos.length);
     }
     // Priority 3: Check for other possible photo storage
@@ -211,7 +279,7 @@ class PhotoBoothGallery {
       console.log('No photos found in session');
     }
 
-    return photos.filter(photo => photo); // Remove any null/undefined photos
+    return photos.filter(photo => photo && photo.length > 0); // Remove any null/undefined/empty photos
   }
 
   createPhotoThumbnails(photos, sessionId) {
@@ -229,7 +297,7 @@ class PhotoBoothGallery {
         photoSrc = photo.dataUrl || photo.src || photo.url || '';
       }
 
-      if (!photoSrc) {
+      if (!photoSrc || photoSrc.length === 0) {
         console.warn(`No valid photo source found for photo ${index}:`, photo);
         return '';
       }
@@ -263,7 +331,18 @@ class PhotoBoothGallery {
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('photoModalLabel');
 
-    if (modalImage) modalImage.src = photoSrc;
+    if (modalImage) {
+      modalImage.src = photoSrc;
+      modalImage.onload = () => {
+        // Image loaded successfully
+        console.log('Modal image loaded successfully');
+      };
+      modalImage.onerror = () => {
+        console.error('Failed to load modal image:', photoSrc);
+        this.showStatusMessage('Failed to load image', 'error');
+      };
+    }
+    
     if (modalTitle) {
       modalTitle.innerHTML = `
         <i class="fas fa-image"></i>
@@ -282,12 +361,16 @@ class PhotoBoothGallery {
   }
 
   downloadCurrentPhoto() {
-    if (!this.currentPhoto) return;
+    if (!this.currentPhoto) {
+      this.showStatusMessage('No photo selected for download', 'error');
+      return;
+    }
 
     try {
       const link = document.createElement('a');
       link.href = this.currentPhoto.src;
       link.download = `photobooth_${this.currentPhoto.sessionId}_photo_${this.currentPhoto.index + 1}.jpg`;
+      link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -306,17 +389,32 @@ class PhotoBoothGallery {
       return;
     }
 
-    // Store session data for editor to load
-    sessionStorage.setItem('photoboothSession', JSON.stringify({
-      photos: session.photos || [],
-      layout: session.layout || 4,
-      email: session.email || 'gallery@user.com',
-      timestamp: session.timestamp || session.savedAt,
-      totalShots: session.totalShots || (session.photos ? session.photos.length : 0)
-    }));
+    try {
+      // Store session data for editor to load
+      const sessionData = {
+        photos: session.photos || [],
+        layout: session.layout || 4,
+        email: session.email || 'gallery@user.com',
+        timestamp: session.timestamp || session.savedAt,
+        totalShots: session.totalShots || (session.photos ? session.photos.length : 0),
+        theme: session.theme || 'classic',
+        filters: session.filters || 'none'
+      };
 
-    // Redirect to editor
-    window.location.href = 'editor.html';
+      sessionStorage.setItem('photoboothSession', JSON.stringify(sessionData));
+
+      // Show loading state
+      this.showLoadingOverlay(true, 'Loading editor...');
+
+      // Small delay to show loading state
+      setTimeout(() => {
+        window.location.href = 'editor.html';
+      }, 500);
+    } catch (error) {
+      console.error('Error preparing session for editor:', error);
+      this.showStatusMessage('Failed to load session in editor', 'error');
+      this.showLoadingOverlay(false);
+    }
   }
 
   downloadSession(sessionIndex) {
@@ -332,10 +430,14 @@ class PhotoBoothGallery {
       const photos = this.getPhotosToDisplay(session);
       if (photos.length === 0) {
         this.showStatusMessage('No photos to download', 'error');
+        this.showLoadingOverlay(false);
         return;
       }
 
-      const sessionName = session.email ? session.email.split('@')[0] : `Session_${sessionIndex}`;
+      const sessionName = session.email ? 
+        session.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '_') : 
+        `Session_${sessionIndex}`;
+      
       this.downloadMultiplePhotos(photos, sessionName);
     } catch (error) {
       console.error('Download session error:', error);
@@ -346,29 +448,36 @@ class PhotoBoothGallery {
   }
 
   async downloadMultiplePhotos(photos, sessionName) {
-    if (photos.length === 1) {
-      // Single photo download (usually the final photo strip)
-      const link = document.createElement('a');
-      link.href = photos[0];
-      link.download = `${sessionName}_photobooth_strip.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      // Multiple photos - download individually with delay
-      photos.forEach((photo, i) => {
-        setTimeout(() => {
-          const link = document.createElement('a');
-          link.href = photo;
-          link.download = `${sessionName}_photo_${i + 1}.jpg`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }, i * 500);
-      });
-    }
+    try {
+      if (photos.length === 1) {
+        // Single photo download (usually the final photo strip)
+        const link = document.createElement('a');
+        link.href = photos[0];
+        link.download = `${sessionName}_photobooth_strip.png`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Multiple photos - download individually with delay
+        for (let i = 0; i < photos.length; i++) {
+          setTimeout(() => {
+            const link = document.createElement('a');
+            link.href = photos[i];
+            link.download = `${sessionName}_photo_${i + 1}.jpg`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }, i * 500);
+        }
+      }
 
-    this.showStatusMessage(`Downloaded ${photos.length} photo(s) successfully!`, 'success');
+      this.showStatusMessage(`Downloaded ${photos.length} photo(s) successfully!`, 'success');
+    } catch (error) {
+      console.error('Error downloading photos:', error);
+      this.showStatusMessage('Failed to download some photos', 'error');
+    }
   }
 
   deleteSession(sessionIndex) {
@@ -378,7 +487,9 @@ class PhotoBoothGallery {
     };
 
     const session = this.sessions[sessionIndex];
-    const sessionName = session ? (session.email || 'Untitled Session') : 'this session';
+    const sessionName = session ? 
+      (session.sessionName || session.email || 'Untitled Session') : 
+      'this session';
 
     this.showConfirmModal(
       `Delete Session`,
@@ -387,19 +498,27 @@ class PhotoBoothGallery {
   }
 
   confirmClearAll() {
+    if (this.sessions.length === 0) {
+      this.showStatusMessage('No sessions to clear', 'info');
+      return;
+    }
+
     this.pendingAction = {
       type: 'clearAll'
     };
 
     this.showConfirmModal(
       'Clear All Sessions',
-      'Are you sure you want to delete ALL photo sessions? This action cannot be undone.'
+      `Are you sure you want to delete ALL ${this.sessions.length} photo sessions? This action cannot be undone.`
     );
   }
 
   showConfirmModal(title, message) {
     const confirmModal = document.getElementById('confirmModal');
-    if (!confirmModal) return;
+    if (!confirmModal) {
+      console.error('Confirmation modal not found');
+      return;
+    }
 
     const modal = new bootstrap.Modal(confirmModal);
     const titleEl = document.getElementById('confirmModalLabel');
@@ -425,6 +544,8 @@ class PhotoBoothGallery {
       case 'clearAll':
         this.performClearAll();
         break;
+      default:
+        console.warn('Unknown pending action:', this.pendingAction.type);
     }
 
     this.pendingAction = null;
@@ -432,22 +553,27 @@ class PhotoBoothGallery {
 
   performDeleteSession(sessionIndex) {
     try {
-      // Remove session by index
-      if (sessionIndex >= 0 && sessionIndex < this.sessions.length) {
-        this.sessions.splice(sessionIndex, 1);
-        
-        // Update localStorage with correct key
-        localStorage.setItem('photoSessions', JSON.stringify(this.sessions));
-        
-        this.showStatusMessage('Session deleted successfully', 'success');
-        
-        if (this.sessions.length === 0) {
-          this.showEmptyState();
-        } else {
-          this.displaySessions();
-        }
-      } else {
+      // Validate session index
+      if (sessionIndex < 0 || sessionIndex >= this.sessions.length) {
         this.showStatusMessage('Session not found', 'error');
+        return;
+      }
+
+      const deletedSession = this.sessions[sessionIndex];
+      
+      // Remove session by index
+      this.sessions.splice(sessionIndex, 1);
+      
+      // Update localStorage with correct key
+      localStorage.setItem('photoSessions', JSON.stringify(this.sessions));
+      
+      const sessionName = deletedSession.sessionName || deletedSession.email || 'Session';
+      this.showStatusMessage(`"${sessionName}" deleted successfully`, 'success');
+      
+      if (this.sessions.length === 0) {
+        this.showEmptyState();
+      } else {
+        this.displaySessions();
       }
     } catch (error) {
       console.error('Error deleting session:', error);
@@ -457,11 +583,13 @@ class PhotoBoothGallery {
 
   performClearAll() {
     try {
+      const sessionCount = this.sessions.length;
+      
       // Clear localStorage with correct key
       localStorage.removeItem('photoSessions');
       this.sessions = [];
       this.showEmptyState();
-      this.showStatusMessage('All sessions cleared successfully', 'success');
+      this.showStatusMessage(`All ${sessionCount} sessions cleared successfully`, 'success');
     } catch (error) {
       console.error('Error clearing sessions:', error);
       this.showStatusMessage('Failed to clear sessions', 'error');
@@ -470,7 +598,10 @@ class PhotoBoothGallery {
 
   showStatusMessage(message, type = 'info') {
     const statusEl = document.getElementById('status-message');
-    if (!statusEl) return;
+    if (!statusEl) {
+      console.warn('Status message element not found');
+      return;
+    }
 
     // Map error to danger for Bootstrap classes
     const bootstrapType = type === 'error' ? 'danger' : type;
@@ -480,13 +611,21 @@ class PhotoBoothGallery {
 
     // Auto hide after 5 seconds
     setTimeout(() => {
-      statusEl.style.display = 'none';
+      if (statusEl.style.display === 'block') {
+        statusEl.style.display = 'none';
+      }
     }, 5000);
+
+    // Smooth scroll to top to ensure message is visible
+    statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   showLoadingOverlay(show, message = 'Loading...') {
     const overlay = document.getElementById('loadingOverlay');
-    if (!overlay) return;
+    if (!overlay) {
+      console.warn('Loading overlay element not found');
+      return;
+    }
 
     if (show) {
       const messageEl = overlay.querySelector('p');
@@ -496,11 +635,32 @@ class PhotoBoothGallery {
       overlay.classList.remove('show');
     }
   }
+
+  // Utility method to get session statistics
+  getSessionStats() {
+    const totalSessions = this.sessions.length;
+    const totalPhotos = this.sessions.reduce((sum, session) => {
+      const photos = this.getPhotosToDisplay(session);
+      return sum + photos.length;
+    }, 0);
+
+    return {
+      totalSessions,
+      totalPhotos,
+      averagePhotosPerSession: totalSessions > 0 ? Math.round(totalPhotos / totalSessions) : 0
+    };
+  }
 }
 
 // Initialize gallery when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   window.gallery = new PhotoBoothGallery();
+  
+  // Log session statistics for debugging
+  setTimeout(() => {
+    const stats = window.gallery.getSessionStats();
+    console.log('Gallery Statistics:', stats);
+  }, 1000);
 });
 
 // Handle browser back button
@@ -513,6 +673,25 @@ window.addEventListener('popstate', () => {
 // Handle storage changes from other tabs
 window.addEventListener('storage', (e) => {
   if (e.key === 'photoSessions' && window.gallery) {
+    console.log('Storage changed in another tab, refreshing gallery');
     window.gallery.loadSessions();
   }
 });
+
+// Handle online/offline status
+window.addEventListener('online', () => {
+  if (window.gallery) {
+    window.gallery.showStatusMessage('Connection restored', 'success');
+  }
+});
+
+window.addEventListener('offline', () => {
+  if (window.gallery) {
+    window.gallery.showStatusMessage('You are offline. Some features may not work.', 'info');
+  }
+});
+
+// Export for potential external use
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = PhotoBoothGallery;
+}
