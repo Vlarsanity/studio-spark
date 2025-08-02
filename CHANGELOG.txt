@@ -8,6 +8,7 @@ All notable changes to this project will be documented here.
 ### MINOR
 - enchance ui/ux for the gallery.html
 - improve css for gallery
+- improve js for gallery
 ---
 
 ## [0.4.11] - 2025-08-01
