@@ -59,6 +59,17 @@
   }
 }
 
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Glass Navbar */
 .glass-navbar {
   background: rgba(255, 255, 255, 0.1);
@@ -167,6 +178,79 @@
   margin-bottom: 0;
 }
 
+/* Status Messages */
+.alert-modern {
+  border-radius: 15px;
+  border: none;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  animation: slideInUp 0.5s ease-out;
+}
+
+.alert-success-modern {
+  background: rgba(40, 167, 69, 0.2);
+  color: #ffffff !important;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.alert-danger-modern {
+  background: rgba(220, 53, 69, 0.2);
+  color: #ffffff !important;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.alert-info-modern {
+  background: rgba(23, 162, 184, 0.2);
+  color: #ffffff !important;
+  border: 1px solid rgba(23, 162, 184, 0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.loading-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: white;
+}
+
+.loading-spinner .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: #4ade80;
+}
+
+.loading-spinner p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
 /* Empty State */
 .empty-state {
   background: rgba(255, 255, 255, 0.1);
@@ -238,6 +322,9 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   animation: slideInUp 1s ease-out var(--delay, 0s) both;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .session-card:hover {
@@ -265,10 +352,10 @@
 .session-meta {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0;
 }
 
 .meta-item {
@@ -277,8 +364,20 @@
   gap: 0.3rem;
 }
 
+.meta-item.meta-placeholder {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.meta-item.meta-placeholder i {
+  opacity: 0.6;
+}
+
 .session-card-body {
   padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .photos-grid {
@@ -286,11 +385,21 @@
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  min-height: 120px;
+}
+
+.photos-grid.uniform-grid {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  align-content: start;
 }
 
 .photo-thumbnail {
   width: 100%;
   height: 80px;
+  max-width: 80px;
   object-fit: cover;
   border-radius: 10px;
   cursor: pointer;
@@ -305,11 +414,26 @@
   box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3);
 }
 
+.photo-preview-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-style: italic;
+  min-height: 80px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
 .session-actions {
   display: flex;
   gap: 0.5rem;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
 }
 
 .btn-action {
@@ -352,16 +476,22 @@
 }
 
 .btn-delete {
-  background: linear-gradient(135deg, #dc3545, #c82333);
-  color: white;
+  background: linear-gradient(135deg, #dc3545, #c82333) !important;
+  color: #ffffff !important;
   flex: 0 0 auto;
   padding: 0.5rem;
   width: 36px;
   height: 36px;
+  border: none !important;
+  font-weight: 700 !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .btn-delete:hover {
-  color: white;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #c82333, #bd2130) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
 }
 
 /* Clear All Section */
@@ -372,139 +502,37 @@
 
 .btn-clear-all {
   background: rgba(220, 53, 69, 0.15);
-  color: #ffffff !important; /* Changed to white for better readability */
+  color: #ffffff !important;
   border: 2px solid rgba(220, 53, 69, 0.5);
   padding: 0.75rem 2rem;
   border-radius: 25px;
-  font-weight: 700 !important; /* Made bolder */
-  font-size: 1rem; /* Slightly larger text */
+  font-weight: 700 !important;
+  font-size: 1rem;
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow for better contrast */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .btn-clear-all:hover {
   background: rgba(220, 53, 69, 0.25);
   border-color: #dc3545;
   transform: translateY(-2px);
-  color: #ffffff !important; /* Ensure it stays white on hover */
+  color: #ffffff !important;
   text-decoration: none;
   box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
 }
 
-/* Fix Delete Button Readability */
-.btn-delete {
-  background: linear-gradient(135deg, #dc3545, #c82333) !important;
-  color: #ffffff !important; /* Ensure white text */
-  flex: 0 0 auto;
-  padding: 0.5rem;
-  width: 36px;
-  height: 36px;
-  border: none !important;
-  font-weight: 700 !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow */
-}
-
-.btn-delete:hover {
-  color: #ffffff !important; /* Keep white on hover */
-  background: linear-gradient(135deg, #c82333, #bd2130) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-}
-
-/* Uniform photo grid containers */
-.photos-grid.uniform-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  min-height: 120px; /* Consistent minimum height */
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  align-content: start; /* Align items to top to prevent centering */
-}
-
-/* Ensure all photo grids have the same structure */
-.photos-grid {
-  min-height: 120px; /* Consistent minimum height for all grids */
-}
-
-/* Style for placeholder metadata items */
-.meta-item.meta-placeholder {
-  opacity: 0.7;
-  font-style: italic;
-}
-
-.meta-item.meta-placeholder i {
-  opacity: 0.6;
-}
-
-/* Ensure consistent session card heights */
-.session-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* Fill available height */
-}
-
-.session-card-body {
-  flex: 1; /* Allow body to expand */
-  display: flex;
-  flex-direction: column;
-}
-
-.session-actions {
-  margin-top: auto; /* Push actions to bottom */
-}
-
-/* Ensure metadata has consistent spacing */
-.session-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 0;
-}
-
-/* Make sure photo thumbnails are consistent */
-.photo-thumbnail {
-  width: 100%;
-  height: 80px;
-  max-width: 80px; /* Prevent stretching on wide screens */
-  object-fit: cover;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Photo grid empty state styling */
-.photo-preview-empty {
-  grid-column: 1 / -1; /* Span all columns */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
-  font-style: italic;
-  min-height: 80px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-/* Fix Confirmation Modal Readability */
+/* Modal Styles */
 .modal-content {
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   overflow: hidden;
-  color: #2d3748 !important; /* Dark text for light background */
+  color: #2d3748 !important;
 }
 
 .modal-header {
@@ -520,13 +548,40 @@
 
 .modal-body {
   padding: 2rem;
-  color: #2d3748 !important; /* Ensure dark text */
+  color: #2d3748 !important;
 }
 
 .modal-body p {
-  color: #4a5568 !important; /* Slightly lighter but still readable */
+  color: #4a5568 !important;
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.modal-img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.btn-download-modal {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-download-modal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+  color: white;
 }
 
 .modal-footer {
@@ -535,7 +590,6 @@
   padding: 1rem 2rem;
 }
 
-/* Ensure modal buttons are readable */
 .modal-footer .btn {
   font-weight: 600;
   padding: 0.5rem 1.5rem;
@@ -554,93 +608,7 @@
   color: white;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .btn-clear-all {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .photos-grid.uniform-grid {
-    min-height: 100px;
-    padding: 0.75rem;
-  }
-  
-  .session-meta {
-    grid-template-columns: 1fr;
-    gap: 0.3rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .btn-clear-all {
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-  
-  .photos-grid.uniform-grid {
-    grid-template-columns: repeat(3, 1fr);
-    min-height: 90px;
-  }
-  
-  .photo-thumbnail {
-    height: 60px;
-    max-width: none; /* Allow full width on mobile */
-  }
-}
-
-/* Photo grid empty state styling */
-.photo-preview-empty {
-  grid-column: 1 / -1; /* Span all columns */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
-  font-style: italic;
-  min-height: 80px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-/* Responsive adjustments for fixes */
-@media (max-width: 768px) {
-  .btn-clear-all {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .photos-grid.uniform-grid {
-    min-height: 100px;
-    padding: 0.75rem;
-  }
-  
-  .session-meta {
-    grid-template-columns: 1fr !important;
-    gap: 0.3rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .btn-clear-all {
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-  
-  .photos-grid.uniform-grid {
-    grid-template-columns: repeat(3, 1fr);
-    min-height: 90px;
-  }
-  
-  .photo-thumbnail {
-    height: 60px;
-    max-width: none; /* Allow full width on mobile */
-  }
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
   .main-container {
     padding: 70px 5px 20px 5px;
@@ -685,6 +653,21 @@
   .empty-title {
     font-size: 1.5rem;
   }
+  
+  .btn-clear-all {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .photos-grid.uniform-grid {
+    min-height: 100px;
+    padding: 0.75rem;
+  }
+  
+  .session-meta {
+    grid-template-columns: 1fr !important;
+    gap: 0.3rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -698,8 +681,24 @@
     grid-template-columns: repeat(3, 1fr);
   }
   
+  .photo-thumbnail {
+    height: 60px;
+    max-width: none;
+  }
+  
   .modal-body {
     padding: 1rem;
+  }
+  
+  .btn-clear-all {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .photos-grid.uniform-grid {
+    grid-template-columns: repeat(3, 1fr);
+    min-height: 90px;
   }
 }
 
