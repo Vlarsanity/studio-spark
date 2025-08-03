@@ -111,11 +111,11 @@ class PhotoStripEditor {
     this.textPositionInputs = document.querySelectorAll('input[name="text-position"]');
     this.textOrientationInputs = document.querySelectorAll('input[name="text-orientation"]');
 
-    // Create enhanced download buttons if they don't exist
-    this.createEnhancedDownloadButtons();
+    // Create simplified download buttons (NO EMAIL)
+    this.createSimplifiedDownloadButtons();
   }
 
-  createEnhancedDownloadButtons() {
+  createSimplifiedDownloadButtons() {
     // Find or create action buttons container
     let actionContainer = document.querySelector('.action-buttons') || document.querySelector('.text-center');
     
@@ -134,31 +134,27 @@ class PhotoStripEditor {
       }
     }
 
-    // Create download buttons row
+    // Create simplified download buttons row
     const downloadRow = document.createElement('div');
     downloadRow.className = 'row g-2 justify-content-center mb-3';
-    downloadRow.id = 'enhanced-download-buttons';
+    downloadRow.id = 'simplified-download-buttons';
 
-    // Remove existing enhanced buttons to prevent duplicates
-    const existing = document.getElementById('enhanced-download-buttons');
+    // Remove existing buttons to prevent duplicates
+    const existing = document.getElementById('simplified-download-buttons');
     if (existing) {
       existing.remove();
     }
 
+    // Simplified, working buttons only (NO EMAIL)
     downloadRow.innerHTML = `
       <div class="col-auto">
         <button id="download-strip-enhanced" class="btn btn-success btn-lg">
-          <i class="fas fa-download"></i> Download Strip
+          <i class="fas fa-download"></i> Download Photo Strip
         </button>
       </div>
       <div class="col-auto">
         <button id="download-individual-enhanced" class="btn btn-warning btn-lg">
           <i class="fas fa-images"></i> Download All Photos
-        </button>
-      </div>
-      <div class="col-auto">
-        <button id="email-strip-enhanced" class="btn btn-info btn-lg">
-          <i class="fas fa-envelope"></i> Email Strip
         </button>
       </div>
       <div class="col-auto">
@@ -170,11 +166,20 @@ class PhotoStripEditor {
 
     actionContainer.appendChild(downloadRow);
 
-    // Attach enhanced event listeners
-    this.attachEnhancedDownloadListeners();
+    // Add helpful instruction text
+    const instructionText = document.createElement('div');
+    instructionText.className = 'alert alert-info mt-3';
+    instructionText.innerHTML = `
+      <i class="fas fa-info-circle"></i> 
+      <strong>How to share:</strong> Download your photos and share them via your favorite apps, email them manually, or print them out!
+    `;
+    actionContainer.appendChild(instructionText);
+
+    // Attach simplified event listeners
+    this.attachSimplifiedDownloadListeners();
   }
 
-  attachEnhancedDownloadListeners() {
+  attachSimplifiedDownloadListeners() {
     // Download photo strip (enhanced)
     const downloadStripBtn = document.getElementById('download-strip-enhanced');
     if (downloadStripBtn) {
@@ -187,16 +192,10 @@ class PhotoStripEditor {
       downloadIndividualBtn.addEventListener('click', () => this.downloadAllPhotosEnhanced());
     }
 
-    // Email photo strip (enhanced)
-    const emailStripBtn = document.getElementById('email-strip-enhanced');
-    if (emailStripBtn) {
-      emailStripBtn.addEventListener('click', () => this.emailPhotoStripEnhanced());
-    }
-
-    // Share functionality (enhanced)
+    // Share functionality (simplified - just show share options)
     const shareBtn = document.getElementById('share-social-enhanced');
     if (shareBtn) {
-      shareBtn.addEventListener('click', () => this.sharePhotoStrip());
+      shareBtn.addEventListener('click', () => this.showSimpleShareOptions());
     }
   }
 
@@ -272,7 +271,7 @@ class PhotoStripEditor {
     }
   }
 
-  // ENHANCED DOWNLOAD FUNCTIONALITY
+  // SIMPLIFIED DOWNLOAD FUNCTIONALITY (NO EMAIL METHODS)
 
   downloadPhotoStripEnhanced() {
     if (!this.canvas) {
@@ -319,7 +318,7 @@ class PhotoStripEditor {
       // Reset button on error
       const btn = document.getElementById('download-strip-enhanced');
       if (btn) {
-        btn.innerHTML = '<i class="fas fa-download"></i> Download Strip';
+        btn.innerHTML = '<i class="fas fa-download"></i> Download Photo Strip';
         btn.disabled = false;
       }
     }
@@ -382,260 +381,115 @@ class PhotoStripEditor {
     }
   }
 
-  async emailPhotoStripEnhanced() {
-    if (!this.canvas || !this.sessionData.email) {
-      this.showError('Unable to email: missing photo strip or email address.');
-      return;
-    }
-
-    try {
-      // Show loading state
-      const btn = document.getElementById('email-strip-enhanced');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing Email...';
-      btn.disabled = true;
-
-      // Get canvas data
-      const imageDataURL = this.canvas.toDataURL('image/png', 0.8);
-      
-      // Create email content
-      const subject = `Your Photobooth Strip - ${new Date().toLocaleDateString()}`;
-      const body = this.createEmailBody();
-      
-      // Try multiple email methods
-      const emailSent = await this.tryEmailMethods(subject, body, imageDataURL);
-      
-      if (emailSent) {
-        this.showStatus('📧 Email prepared successfully!');
-        this.logDownload('email_strip', 'email_sent');
-      } else {
-        // Fallback: create downloadable email template
-        this.createEmailTemplate(subject, body, imageDataURL);
-      }
-      
-      // Reset button
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }, 2000);
-      
-    } catch (error) {
-      console.error('Enhanced email failed:', error);
-      this.showError('Failed to prepare email. Please try downloading instead.');
-      
-      // Reset button on error
-      const btn = document.getElementById('email-strip-enhanced');
-      if (btn) {
-        btn.innerHTML = '<i class="fas fa-envelope"></i> Email Strip';
-        btn.disabled = false;
-      }
-    }
-  }
-
-  createEmailBody() {
-    const sessionDate = new Date(this.sessionData.timestamp).toLocaleDateString();
-    const sessionTime = new Date(this.sessionData.timestamp).toLocaleTimeString();
-    
-    return `Hi there!
-
-🎉 Your photobooth session is complete!
-
-SESSION DETAILS:
-📸 Photos taken: ${this.sessionData.totalShots}
-🎨 Layout: ${this.sessionData.layout} shots
-🎭 Theme: ${this.currentTheme}
-🔧 Filter: ${this.currentFilter}
-📝 Text overlays: ${this.textOverlays.length}
-📅 Date: ${sessionDate} at ${sessionTime}
-🆔 Session ID: ${this.sessionData.sessionId || 'N/A'}
-
-Your beautiful photo strip is attached! Share it with friends and family.
-
-Thanks for using our photobooth! 📷✨
-
----
-Generated by Digital Photobooth
-${window.location.origin}`;
-  }
-
-  async tryEmailMethods(subject, body, imageDataURL) {
-    // Method 1: Try Web Share API (mobile-friendly)
-    if (navigator.share && navigator.canShare) {
-      try {
-        // Convert data URL to blob for sharing
-        const response = await fetch(imageDataURL);
-        const blob = await response.blob();
-        
-        const file = new File([blob], 'photobooth-strip.png', { type: 'image/png' });
-        
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: subject,
-            text: body,
-            files: [file]
-          });
-          return true;
-        }
-      } catch (error) {
-        console.log('Web Share API failed, trying next method:', error);
-      }
-    }
-
-    // Method 2: mailto link (always works but limited)
-    try {
-      const mailtoLink = `mailto:${this.sessionData.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoLink);
-      this.showStatus('📧 Default email client opened. Please attach the downloaded photo strip.');
-      
-      // Also trigger download for easy attachment
-      setTimeout(() => {
-        this.downloadPhotoStripEnhanced();
-      }, 1000);
-      
-      return true;
-    } catch (error) {
-      console.log('Mailto failed:', error);
-    }
-
-    return false;
-  }
-
-  createEmailTemplate(subject, body, imageDataURL) {
-    // Create a downloadable HTML email template
-    const htmlTemplate = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>${subject}</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; text-align: center; border-radius: 10px; }
-        .content { padding: 20px; background: #f8f9fa; border-radius: 10px; margin: 20px 0; }
-        .photo-strip { text-align: center; margin: 20px 0; }
-        .photo-strip img { max-width: 100%; height: auto; border: 3px solid #dee2e6; border-radius: 10px; }
-        .footer { text-align: center; color: #6c757d; font-size: 0.9em; margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🎉 Your Photobooth Strip!</h1>
-    </div>
-    <div class="content">
-        <p style="white-space: pre-line;">${body}</p>
-    </div>
-    <div class="photo-strip">
-        <img src="${imageDataURL}" alt="Your Photobooth Strip" />
-    </div>
-    <div class="footer">
-        <p>Save this email or right-click the image above to save your photo strip!</p>
-    </div>
-</body>
-</html>`;
-
-    // Create and download HTML file
-    const blob = new Blob([htmlTemplate], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.download = `photobooth_email_${new Date().getTime()}.html`;
-    link.href = url;
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    URL.revokeObjectURL(url);
-    
-    this.showStatus('📧 Email template downloaded! Open it to view and forward your photo strip.');
-  }
-
-  sharePhotoStrip() {
-    if (!this.canvas) {
-      this.showError('No photo strip to share.');
-      return;
-    }
-
-    // Show loading state
+  showSimpleShareOptions() {
+    // Show loading state briefly
     const btn = document.getElementById('share-social-enhanced');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
     btn.disabled = true;
 
-    try {
-      // Method 1: Web Share API (modern browsers)
-      if (navigator.share) {
-        this.canvas.toBlob(async (blob) => {
-          try {
-            const file = new File([blob], 'photobooth-strip.png', { type: 'image/png' });
-            
-            await navigator.share({
-              title: 'Check out my photobooth strip!',
-              text: `Created with Digital Photobooth - ${this.sessionData.totalShots} photos, ${this.currentTheme} theme`,
-              files: [file]
-            });
-            
-            this.logDownload('share_native', 'web_share_api');
-            this.showStatus('📱 Shared successfully!');
-            
-          } catch (error) {
-            console.log('Native share failed, showing fallback options:', error);
-            this.showShareFallback();
-          } finally {
-            // Reset button
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-          }
-        }, 'image/png');
-      } else {
-        // Method 2: Fallback share options
-        this.showShareFallback();
-        
-        // Reset button
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
+    // First, download the photo strip
+    this.downloadPhotoStripEnhanced();
+
+    // Then show simple share modal
+    setTimeout(() => {
+      this.showSimpleShareModal();
       
-    } catch (error) {
-      console.error('Share failed:', error);
-      this.showError('Failed to share. Please try downloading instead.');
-      
-      // Reset button on error
+      // Reset button
       btn.innerHTML = originalText;
       btn.disabled = false;
-    }
+    }, 1000);
   }
 
-  showShareFallback() {
-    // Create modal with share options
+  showSimpleShareModal() {
+    // Create modal with simple share instructions
     const modal = document.createElement('div');
     modal.className = 'modal fade';
     modal.id = 'shareModal';
     modal.innerHTML = `
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">📱 Share Your Photo Strip</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+              <i class="fas fa-share-alt"></i> Share Your Photo Strip
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
           </div>
-          <div class="modal-body text-center">
-            <p>Choose how you'd like to share your photo strip:</p>
-            <div class="d-grid gap-2">
-              <button class="btn btn-primary" onclick="window.photoStripEditor.copyImageToClipboard()">
-                <i class="fas fa-copy"></i> Copy Image to Clipboard
+          <div class="modal-body">
+            <div class="text-center mb-4">
+              <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+              <h4 class="mt-2 text-success">Photo Strip Downloaded!</h4>
+              <p class="text-muted">Your photo strip has been saved to your device</p>
+            </div>
+            
+            <div class="alert alert-info">
+              <i class="fas fa-lightbulb"></i>
+              <strong>Now you can share it anywhere:</strong>
+            </div>
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="card h-100 border-warning">
+                  <div class="card-body text-center">
+                    <i class="fas fa-envelope text-warning" style="font-size: 2.5rem;"></i>
+                    <h5 class="mt-3">📧 Email</h5>
+                    <p class="small">
+                      Open your email app, compose a message, and attach the downloaded photo strip to send to friends and family
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="card h-100 border-success">
+                  <div class="card-body text-center">
+                    <i class="fas fa-comments text-success" style="font-size: 2.5rem;"></i>
+                    <h5 class="mt-3">💬 Messaging</h5>
+                    <p class="small">
+                      Share via WhatsApp, Telegram, SMS, or any messaging app by selecting the downloaded image from your gallery
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="card h-100 border-info">
+                  <div class="card-body text-center">
+                    <i class="fab fa-facebook text-info" style="font-size: 2.5rem;"></i>
+                    <h5 class="mt-3">📱 Social Media</h5>
+                    <p class="small">
+                      Post to Facebook, Instagram, Twitter, TikTok by uploading the downloaded image to your favorite social platform
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="card h-100 border-secondary">
+                  <div class="card-body text-center">
+                    <i class="fas fa-print text-secondary" style="font-size: 2.5rem;"></i>
+                    <h5 class="mt-3">🖨️ Print</h5>
+                    <p class="small">
+                      Print your photo strip at home, at a photo printing service, or create physical copies for keepsakes
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+              <button class="btn btn-outline-success me-2" onclick="window.photoStripEditor.downloadPhotoStripEnhanced()">
+                <i class="fas fa-download"></i> Download Again
               </button>
-              <button class="btn btn-success" onclick="window.photoStripEditor.downloadPhotoStripEnhanced()">
-                <i class="fas fa-download"></i> Download & Share Manually
-              </button>
-              <button class="btn btn-info" onclick="window.photoStripEditor.shareToSocialMedia('facebook')">
-                <i class="fab fa-facebook"></i> Share on Facebook
-              </button>
-              <button class="btn btn-warning" onclick="window.photoStripEditor.shareToSocialMedia('twitter')">
-                <i class="fab fa-twitter"></i> Share on Twitter
-              </button>
-              <button class="btn btn-danger" onclick="window.photoStripEditor.shareToSocialMedia('instagram')">
-                <i class="fab fa-instagram"></i> Instagram (via download)
+              <button class="btn btn-outline-warning" onclick="window.photoStripEditor.downloadAllPhotosEnhanced()">
+                <i class="fas fa-images"></i> Download Individual Photos
               </button>
             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="fas fa-times"></i> Close
+            </button>
           </div>
         </div>
       </div>
@@ -651,63 +505,6 @@ ${window.location.origin}`;
     modal.addEventListener('hidden.bs.modal', () => {
       document.body.removeChild(modal);
     });
-  }
-
-  async copyImageToClipboard() {
-    try {
-      this.canvas.toBlob(async (blob) => {
-        try {
-          await navigator.clipboard.write([
-            new ClipboardItem({ 'image/png': blob })
-          ]);
-          
-          this.showStatus('📋 Image copied to clipboard! You can now paste it anywhere.');
-          this.logDownload('share_clipboard', 'clipboard_copy');
-          
-          // Close modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById('shareModal'));
-          if (modal) modal.hide();
-          
-        } catch (error) {
-          console.error('Clipboard copy failed:', error);
-          this.showError('Failed to copy image. Please try downloading instead.');
-        }
-      }, 'image/png');
-    } catch (error) {
-      console.error('Clipboard operation failed:', error);
-      this.showError('Clipboard not supported. Please download the image instead.');
-    }
-  }
-
-  shareToSocialMedia(platform) {
-    // First download the image, then provide platform-specific instructions
-    this.downloadPhotoStripEnhanced();
-    
-    const instructions = {
-      facebook: 'Your photo strip has been downloaded! Go to Facebook, create a new post, and upload the downloaded image.',
-      twitter: 'Your photo strip has been downloaded! Go to Twitter, compose a tweet, and attach the downloaded image.',
-      instagram: 'Your photo strip has been downloaded! Open Instagram, tap +, select the downloaded image from your photos.'
-    };
-    
-    this.showStatus(`📱 ${instructions[platform]}`);
-    this.logDownload('share_social', platform);
-    
-    // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('shareModal'));
-    if (modal) modal.hide();
-    
-    // Optional: Open the social media site
-    const urls = {
-      facebook: 'https://www.facebook.com',
-      twitter: 'https://twitter.com/compose/tweet',
-      instagram: 'https://www.instagram.com'
-    };
-    
-    setTimeout(() => {
-      if (confirm(`Open ${platform.charAt(0).toUpperCase() + platform.slice(1)}?`)) {
-        window.open(urls[platform], '_blank');
-      }
-    }, 2000);
   }
 
   // LOGGING AND ANALYTICS
