@@ -26,9 +26,9 @@ This project lets users:
 ## 🛠️ Built With
 
 - **Frontend:** HTML, CSS, JavaScript (Vanilla)
-- **Backend:** PHP
-- **Database/Storage:** Supabase (or MySQL + local file system)
-- **Email:** PHPMailer or Supabase functions
+- **Backend:** PHP (Future Development)
+- **Database/Storage:** Supabase (or MySQL + local file system) (Future Development)
+- **Email:** PHPMailer or Supabase functions (Future Development)
 - **Deployment:** Can be hosted on Vercel, Netlify, or custom server
 
 ---
