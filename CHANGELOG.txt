@@ -4,6 +4,11 @@ All notable changes to this project will be documented here.
 
 ---
 
+## [0.4.11] - 2025-08-03
+### MINOR
+- improve css for camera
+---
+
 ## [0.4.11] - 2025-08-02
 ### MINOR
 - enchance ui/ux for the gallery.html
