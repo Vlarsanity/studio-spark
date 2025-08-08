@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Studio Spark - Create Amazing Photo Strips</title>
+  <meta name="description" content="Studio Spark - Professional photo booth experience. Spark your story with stunning photo strips, custom filters, and instant results!" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link href="assets/css/style.css" rel="stylesheet" />
+</head>
+<body class="modern-bg">
+
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="floating-element" style="--delay: 0s; --duration: 8s;"></div>
+    <div class="floating-element" style="--delay: 2s; --duration: 10s;"></div>
+    <div class="floating-element" style="--delay: 4s; --duration: 12s;"></div>
+    <div class="floating-element" style="--delay: 1s; --duration: 9s;"></div>
+    <div class="floating-element" style="--delay: 3s; --duration: 11s;"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg glass-navbar fixed-top" role="navigation">
+    <div class="container">
+      <a class="navbar-brand brand-logo" href="#" aria-label="Studio Spark Home">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-text">Studio Spark</span>
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a href="gallery.html" class="nav-link glass-btn">
+          <i class="icon">🖼️</i> Gallery
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-lg-6 hero-content">
+          <div class="hero-badge mb-4">
+            <span class="pulse-dot"></span>
+            Ready to spark your story?
+          </div>
+          <h1 class="hero-title mb-4">
+            <span class="gradient-text">Spark Your Story</span>
+            with Amazing
+            Photo Strips
+          </h1>
+          <p class="hero-subtitle mb-5">
+            Professional studio quality meets instant creativity. 
+            Capture stunning moments, ignite your memories, and create photo strips that truly spark joy!
+          </p>
+          <div class="hero-features mb-5">
+            <div class="feature-item">
+              <span class="feature-icon">⚡</span>
+              <span>Instant Spark</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🎨</span>
+              <span>Studio Quality</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📱</span>
+              <span>Mobile Ready</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="photo-booth-form">
+            <div class="form-header">
+              <h2 class="form-title">Ignite Your Session</h2>
+              <p class="form-subtitle">Choose your template and let the magic spark!</p>
+            </div>
+
+            <form id="start-form" novalidate>
+              <!-- Email Input -->
+              <div class="input-group-modern mb-4">
+                <div class="input-icon">
+                  <span>📧</span>
+                </div>
+                <input type="email" id="email" name="email" class="form-control-modern" 
+                       placeholder="Enter your email address" required aria-required="true" />
+                <div class="input-border"></div>
+              </div>
+
+              <!-- Template Selection -->
+              <fieldset class="template-selection" aria-describedby="template-choice-desc" role="radiogroup">
+                <legend class="template-legend">Choose Your Template</legend>
+                
+                <div class="template-grid">
+                  <!-- 4 Shots Template -->
+                  <label class="template-card" for="layout-choice-4">
+                    <input type="radio" id="layout-choice-4" name="layout-choice" value="4" />
+                    <div class="template-card-inner">
+                      <div class="template-preview">
+                        <img src="assets/img/4-Shots-Template.PNG" alt="4 Shots Layout" class="template-image" />
+                        <div class="template-overlay">
+                          <div class="template-check">✓</div>
+                        </div>
+                      </div>
+                      <div class="template-info">
+                        <h3 class="template-title">Classic Spark</h3>
+                        <p class="template-desc">4 shots in traditional studio layout</p>
+                        <div class="template-badge">Most Popular</div>
+                      </div>
+                    </div>
+                  </label>
+
+                  <!-- 6 Shots Template -->
+                  <label class="template-card" for="layout-choice-6">
+                    <input type="radio" id="layout-choice-6" name="layout-choice" value="6" />
+                    <div class="template-card-inner">
+                      <div class="template-preview">
+                        <img src="assets/img/6-Shots-Template.PNG" alt="6 Shots Layout" class="template-image" />
+                        <div class="template-overlay">
+                          <div class="template-check">✓</div>
+                        </div>
+                      </div>
+                      <div class="template-info">
+                        <h3 class="template-title">Extended Spark</h3>
+                        <p class="template-desc">6 shots for more creative moments</p>
+                        <div class="template-badge template-badge-premium">Studio Pro</div>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Start Button -->
+                <div class="form-footer">
+                  <button id="startSessionBtn" class="btn-start-session" type="submit" disabled>
+                    <span class="btn-text">Spark Your Session</span>
+                    <span class="btn-icon">⚡</span>
+                    <div class="btn-ripple"></div>
+                  </button>
+                  <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Why Choose Studio Spark?</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-card">
+            <div class="feature-card-icon">⚡</div>
+            <h3>Studio Quality</h3>
+            <p>Professional-grade photos with studio lighting effects and premium filters</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-card">
+            <div class="feature-card-icon">🎯</div>
+            <h3>Instant Spark</h3>
+            <p>Lightning-fast processing - your memories spark to life in seconds</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-card">
+            <div class="feature-card-icon">🎨</div>
+            <h3>Creative Freedom</h3>
+            <p>Unlimited customization to make every photo strip uniquely yours</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="glass-footer">
+    <div class="container text-center">
+      <p class="mb-0">Made with ❤️ to spark your memories</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+
+  <!-- Your App Script -->
+  <script src="assets/js/app.js" defer></script>
+
+</body>
+</html>

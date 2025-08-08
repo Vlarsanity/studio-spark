@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Studio Spark - Gallery</title>
+  <meta name="description" content="Studio Spark Gallery - View and manage your sparkling photo booth memories">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="assets/css/gallery.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <meta name="theme-color" content="#667eea">
+</head>
+<body class="gallery-page">
+
+  <!-- Animated Background Elements -->
+  <div class="bg-animation">
+    <div class="floating-element" style="--duration: 8s; --delay: 0s;"></div>
+    <div class="floating-element" style="--duration: 12s; --delay: 2s;"></div>
+    <div class="floating-element" style="--duration: 10s; --delay: 4s;"></div>
+    <div class="floating-element" style="--duration: 14s; --delay: 1s;"></div>
+    <div class="floating-element" style="--duration: 9s; --delay: 3s;"></div>
+    <div class="floating-element" style="--duration: 11s; --delay: 5s;"></div>
+    <div class="floating-element" style="--duration: 13s; --delay: 2.5s;"></div>
+    <div class="floating-element" style="--duration: 7s; --delay: 4.5s;"></div>
+  </div>
+
+  <!-- Glass Navbar -->
+  <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <span class="brand-icon">⚡</span>
+        Studio Spark
+      </a>
+      <div class="navbar-nav ms-auto d-flex align-items-center gap-2">
+        <button id="refreshBtn" class="glass-btn" title="Refresh Gallery">
+          <i class="fas fa-sync-alt"></i>
+          <span class="d-none d-sm-inline">Refresh</span>
+        </button>
+        <a href="index.html" class="glass-btn">
+          <i class="fas fa-bolt"></i>
+          <span class="d-none d-sm-inline">New Spark</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-images"></i>
+        Studio Gallery
+      </h1>
+      <p class="page-subtitle">Your sparkling photo booth memories</p>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="status-message" class="alert alert-modern" style="display: none;" role="alert" aria-live="polite"></div>
+
+    <!-- Empty State -->
+    <div id="no-sessions" class="empty-state" style="display: none;">
+      <i class="fas fa-bolt empty-icon"></i>
+      <h3 class="empty-title">No Sparks Yet</h3>
+      <p class="empty-subtitle">Start creating sparkling memories with your first studio session!</p>
+      <a href="index.html" class="btn-primary-modern">
+        <i class="fas fa-bolt"></i>
+        Spark Your First Session
+      </a>
+    </div>
+
+    <!-- Sessions Grid -->
+    <div id="sessions-container" class="sessions-grid">
+      <!-- Sessions will be loaded here dynamically -->
+    </div>
+
+    <!-- Clear All Section -->
+    <div class="clear-all-section" id="clear-all-section" style="display: none;">
+      <button id="clearAllBtn" class="btn-clear-all" aria-label="Clear all photo sessions">
+        <i class="fas fa-trash-alt"></i>
+        Clear All Sessions
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+    <div class="loading-spinner">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 mb-0">Loading your sparkling gallery...</p>
+    </div>
+  </div>
+
+  <!-- Photo Modal -->
+  <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="photoModalLabel">
+            <i class="fas fa-image"></i>
+            Studio Photo View
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="modalImage" class="modal-img" src="" alt="Full size photo" loading="lazy">
+          <div class="mt-3">
+            <button id="downloadBtn" class="btn-download-modal">
+              <i class="fas fa-download"></i>
+              Download Photo
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">
+            <i class="fas fa-exclamation-triangle text-warning"></i>
+            Confirm Action
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="confirmMessage">Are you sure you want to perform this action?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button type="button" class="btn btn-danger" id="confirmActionBtn">
+            <i class="fas fa-check"></i>
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Help (Hidden by default) -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1000;">
+    <div class="toast" id="shortcutsToast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <i class="fas fa-keyboard me-2"></i>
+        <strong class="me-auto">Keyboard Shortcuts</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <div><kbd>Esc</kbd> - Close modals</div>
+        <div><kbd>Ctrl</kbd> + <kbd>R</kbd> - Refresh gallery</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/gallery.js"></script>
+
+  <!-- Additional Features Script -->
+  <script>
+    // Show keyboard shortcuts toast on first visit
+    document.addEventListener('DOMContentLoaded', () => {
+      const hasSeenShortcuts = localStorage.getItem('gallery_seen_shortcuts');
+      if (!hasSeenShortcuts) {
+        setTimeout(() => {
+          const shortcutsToast = new bootstrap.Toast(document.getElementById('shortcutsToast'));
+          shortcutsToast.show();
+          localStorage.setItem('gallery_seen_shortcuts', 'true');
+        }, 3000);
+      }
+    });
+
+    // Add service worker registration for offline support (optional)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // Add performance monitoring
+    window.addEventListener('load', () => {
+      const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+      console.log(`Studio Spark Gallery loaded in ${loadTime}ms`);
+      
+      // Report slow loads
+      if (loadTime > 3000) {
+        console.warn('Gallery took longer than 3 seconds to load');
+      }
+    });
+
+    // Add error boundary for JavaScript errors
+    window.addEventListener('error', (e) => {
+      console.error('Studio Spark Gallery JavaScript Error:', e.error);
+      
+      // Show user-friendly error message
+      const statusEl = document.getElementById('status-message');
+      if (statusEl && window.gallery) {
+        window.gallery.showStatusMessage('Something went wrong. Please refresh the page.', 'error');
+      }
+    });
+
+    // Handle unhandled promise rejections
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('Unhandled promise rejection in Studio Spark gallery:', e.reason);
+      e.preventDefault(); // Prevent default browser behavior
+    });
+  </script>
+
+</body>
+</html>
